@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#FFE1EC"/>
+  <g transform="translate(256 256) scale(0.86) translate(-256 -270)">
+    <!-- bun -->
+    <circle cx="256" cy="112" r="62" fill="#8A5A44"/>
+    <path d="M222 92 q34 -26 68 0" stroke="#6E4434" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <!-- back hair -->
+    <ellipse cx="256" cy="262" rx="160" ry="150" fill="#8A5A44"/>
+    <!-- face -->
+    <ellipse cx="256" cy="292" rx="132" ry="122" fill="#FFE7DA"/>
+    <!-- bangs -->
+    <path d="M124 262 C130 168 190 136 256 136 C322 136 382 168 388 262 C356 232 318 214 288 196 C272 222 236 232 196 226 C176 240 150 252 124 262 Z" fill="#8A5A44"/>
+    <!-- bow -->
+    <g transform="translate(336 150) rotate(18)">
+      <path d="M0 0 L-46 -30 Q-56 0 -46 30 Z" fill="#F47EA6"/>
+      <path d="M0 0 L46 -30 Q56 0 46 30 Z" fill="#F47EA6"/>
+      <circle r="13" fill="#E0608D"/>
+    </g>
+    <!-- eyes -->
+    <g fill="#4A3B52">
+      <ellipse cx="206" cy="298" rx="22" ry="27"/>
+      <ellipse cx="306" cy="298" rx="22" ry="27"/>
+    </g>
+    <g fill="#fff">
+      <circle cx="214" cy="288" r="9"/><circle cx="200" cy="308" r="4.5"/>
+      <circle cx="314" cy="288" r="9"/><circle cx="300" cy="308" r="4.5"/>
+    </g>
+    <!-- cheeks -->
+    <ellipse cx="172" cy="338" rx="24" ry="14" fill="#FF9EBB" opacity=".75"/>
+    <ellipse cx="340" cy="338" rx="24" ry="14" fill="#FF9EBB" opacity=".75"/>
+    <!-- mouth -->
+    <path d="M240 338 q16 16 32 0" stroke="#C2457A" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <!-- sparkles -->
+    <path d="M110 150 l6 16 16 6 -16 6 -6 16 -6 -16 -16 -6 16 -6z" fill="#FFF" opacity=".9"/>
+  </g>
+</svg>

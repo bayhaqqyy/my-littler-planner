@@ -1,0 +1,15 @@
+# Partial config; run `npx supabase init` to generate the full file if needed.
+project_id = "my-little-planner"
+
+[functions.send-reminders]
+# Cron path is protected by checking the service role key inside the function;
+# the snooze path (called from the service worker) authenticates by push endpoint.
+verify_jwt = false
+
+[functions.gcal]
+# Google redirects here without a Supabase JWT; user calls are verified inside the function.
+verify_jwt = false
+
+[functions.ical]
+# Calendar apps fetch the feed without a Supabase JWT; the secret token in the URL authorises it.
+verify_jwt = false

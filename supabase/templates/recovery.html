@@ -1,0 +1,12 @@
+<div style="background:#FFF7F9;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;color:#4A3B52">
+  <div style="max-width:440px;margin:0 auto;background:#ffffff;border:1px solid #F3E1E8;border-radius:20px;padding:28px 24px">
+    <h1 style="margin:0 0 4px;font-size:22px;color:#C2457A">My Little Planner</h1>
+    <p style="margin:0 0 20px;font-size:14px;color:#76627C">Reset password 🔑</p>
+    <p style="font-size:15px;line-height:1.5;margin:0 0 20px">Ada permintaan untuk mengganti password akunmu. Ketuk tombol di bawah untuk membuat password baru. Link ini hanya berlaku 1 jam.</p>
+    <p style="text-align:center;margin:0 0 20px">
+      <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#C2457A;color:#ffffff;text-decoration:none;font-weight:bold;font-size:15px;padding:12px 28px;border-radius:999px">Buat password baru</a>
+    </p>
+    <p style="font-size:13px;line-height:1.5;color:#76627C;margin:0">Kalau tombol tidak bisa diketuk, salin link ini ke browser:<br><span style="word-break:break-all">{{ .ConfirmationURL }}</span></p>
+    <p style="font-size:12px;color:#76627C;margin:20px 0 0">Kalau kamu tidak meminta reset password, abaikan email ini. Password kamu tidak berubah.</p>
+  </div>
+</div>

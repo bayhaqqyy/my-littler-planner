@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>%WEB_TITLE%</title>
+    <meta name="description" content="To-do list dan planner harian pastel yang lucu." />
+    <meta name="theme-color" content="#FFBFD8" />
+    <meta name="color-scheme" content="light only" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Little Planner" />
+    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+      }
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+        margin: 0;
+        background: #FFF7F9;
+      }
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+      /* Pink splash shown until React mounts (React replaces #root's children). */
+      #mlp-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9000;
+        transition: opacity .25s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        background: linear-gradient(135deg, #FFF1F6, #F8F0FF, #EEF6FF);
+        font-family: system-ui, -apple-system, sans-serif;
+        color: #C2457A;
+        font-weight: 700;
+      }
+      #mlp-splash svg {
+        border-radius: 28px;
+        box-shadow: 0 6px 14px rgba(194, 69, 122, 0.18);
+        animation: mlp-bob 1.6s ease-in-out infinite;
+      }
+      #mlp-splash span { font-size: 16px; }
+      .mlp-dots { display: flex; gap: 6px; height: 10px; align-items: center; }
+      .mlp-dots i { width: 8px; height: 8px; border-radius: 4px; background: #F7A8C4; opacity: .25; animation: mlp-dot 1.2s infinite; }
+      .mlp-dots i:nth-child(2) { animation-delay: .15s; }
+      .mlp-dots i:nth-child(3) { animation-delay: .3s; }
+      .mlp-msg { font-size: 13px; min-height: 18px; color: #76627C; font-weight: 400; visibility: hidden; }
+      @keyframes mlp-dot { 40% { opacity: 1; transform: scale(1); } 0%, 80%, 100% { opacity: .25; transform: scale(.8); } }
+      @keyframes mlp-bob {
+        50% { transform: translateY(-8px); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #mlp-splash svg, .mlp-dots i { animation: none; }
+      }
+      /* iOS Safari auto-zooms on focus when a field's text is < 16px; never let that happen. */
+      input, textarea, select { font-size: max(16px, 1em) !important; }
+      /* Date/time inputs (WebDateTimeInput): the real input is an invisible layer over our own
+         label so iOS can't centre/resize it; a tap anywhere opens the native picker. */
+      input.mlp-dt {
+        position: absolute; inset: 0; width: 100%; height: 100%; min-width: 0; margin: 0; padding: 0; border: 0;
+        opacity: 0; -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; z-index: 1;
+      }
+      input.mlp-dt::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: auto; height: auto; margin: 0; padding: 0; cursor: pointer; }
+    </style>
+    <script>
+      /* Boot watchdog: if the app hasn't drawn anything after 12 s, show what went wrong
+         instead of a blank screen (helps on iPhone browsers where there is no console). */
+      (function () {
+        var errs = [];
+        window.addEventListener('error', function (e) { errs.push(e.message || ('gagal memuat ' + ((e.target && (e.target.src || e.target.href)) || '?'))); }, true);
+        window.addEventListener('unhandledrejection', function (e) { var r = e.reason; errs.push(String((r && (r.message || r)) || r)); });
+        setTimeout(function () {
+          var root = document.getElementById('root');
+          var stuck = !root || document.getElementById('mlp-splash') || !root.innerText.replace(/\s/g, '');
+          if (!stuck) return;
+          if (window.__mlpBooted) return;
+          var box = document.createElement('div');
+          box.id = 'mlp-boot-error';
+          box.setAttribute('role', 'alert');
+          box.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:#FFF7F9;font-family:-apple-system,system-ui,sans-serif;color:#4A3B52;z-index:99999';
+          box.innerHTML = '<div style="max-width:380px;text-align:center"><div style="font-size:42px">🌷</div>' +
+            '<h2 style="color:#C2457A;margin:8px 0">Aplikasi belum bisa tampil</h2>' +
+            '<p style="font-size:15px;line-height:1.5">Coba muat ulang. Kalau masih kosong, kirim screenshot layar ini ke pengembang.</p>' +
+            '<button onclick="location.reload()" style="font-size:16px;padding:12px 28px;border:0;border-radius:999px;background:#C2457A;color:#fff;margin:8px 0 16px">Muat ulang</button>' +
+            '<pre style="text-align:left;white-space:pre-wrap;font-size:11px;background:#fff;border:1px solid #F3E1E8;border-radius:12px;padding:10px;max-height:40vh;overflow:auto"></pre></div>';
+          box.querySelector('pre').textContent = (errs.length ? errs.slice(0, 8).join('\n') : 'Tidak ada error tercatat') + '\n\n' + navigator.userAgent;
+          document.body.appendChild(box);
+        }, 20000);
+      })();
+    </script>
+  </head>
+
+  <body>
+    <!-- Use static rendering with Expo Router to support running without JavaScript. -->
+    <noscript> You need to enable JavaScript to run this app. </noscript>
+    <!-- The root element for your Expo app. -->
+    <div id="root"></div>
+    <div id="mlp-splash" role="status" aria-label="Memuat My Little Planner"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="120" height="120" aria-hidden="true"> <rect width="512" height="512" rx="112" fill="#FFE1EC"/> <g transform="translate(256 256) scale(0.86) translate(-256 -270)"> <!-- bun --> <circle cx="256" cy="112" r="62" fill="#8A5A44"/> <path d="M222 92 q34 -26 68 0" stroke="#6E4434" stroke-width="7" fill="none" stroke-linecap="round"/> <!-- back hair --> <ellipse cx="256" cy="262" rx="160" ry="150" fill="#8A5A44"/> <!-- face --> <ellipse cx="256" cy="292" rx="132" ry="122" fill="#FFE7DA"/> <!-- bangs --> <path d="M124 262 C130 168 190 136 256 136 C322 136 382 168 388 262 C356 232 318 214 288 196 C272 222 236 232 196 226 C176 240 150 252 124 262 Z" fill="#8A5A44"/> <!-- bow --> <g transform="translate(336 150) rotate(18)"> <path d="M0 0 L-46 -30 Q-56 0 -46 30 Z" fill="#F47EA6"/> <path d="M0 0 L46 -30 Q56 0 46 30 Z" fill="#F47EA6"/> <circle r="13" fill="#E0608D"/> </g> <!-- eyes --> <g fill="#4A3B52"> <ellipse cx="206" cy="298" rx="22" ry="27"/> <ellipse cx="306" cy="298" rx="22" ry="27"/> </g> <g fill="#fff"> <circle cx="214" cy="288" r="9"/><circle cx="200" cy="308" r="4.5"/> <circle cx="314" cy="288" r="9"/><circle cx="300" cy="308" r="4.5"/> </g> <!-- cheeks --> <ellipse cx="172" cy="338" rx="24" ry="14" fill="#FF9EBB" opacity=".75"/> <ellipse cx="340" cy="338" rx="24" ry="14" fill="#FF9EBB" opacity=".75"/> <!-- mouth --> <path d="M240 338 q16 16 32 0" stroke="#C2457A" stroke-width="7" fill="none" stroke-linecap="round"/> <!-- sparkles --> <path d="M110 150 l6 16 16 6 -16 6 -6 16 -6 -16 -16 -6 16 -6z" fill="#FFF" opacity=".9"/> </g> </svg><span>My Little Planner</span><div class="mlp-dots" aria-hidden="true"><i></i><i></i><i></i></div><small class="mlp-msg">Sebentar ya…</small></div>
+    <script>
+      /* The splash sits above #root until the app has drawn its first screen (it calls
+         __mlpReady), so there is never a blank gap while code chunks download. */
+      window.__mlpReady = function () {
+        // The app is up: also drop the "couldn't load" message if a slow start triggered it.
+        window.__mlpBooted = true;
+        var err = document.getElementById('mlp-boot-error');
+        if (err) err.remove();
+        var el = document.getElementById('mlp-splash');
+        if (!el || el.dataset.leaving) return;
+        el.dataset.leaving = '1';
+        el.style.opacity = '0';
+        setTimeout(function () { el.remove(); }, 250);
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "My Little Planner",
+    "slug": "my-little-planner",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "mylittleplanner",
+    "userInterfaceStyle": "light",
+    "web": {
+      "output": "single",
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png",
+      "name": "My Little Planner",
+      "shortName": "Little Planner",
+      "themeColor": "#FFBFD8",
+      "backgroundColor": "#FFF7F9"
+    },
+    "plugins": ["expo-router", "expo-font"],
+    "experiments": { "typedRoutes": false }
+  }
+}

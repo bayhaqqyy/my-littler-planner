@@ -1,0 +1,26 @@
+# Usage: fill .env (see .env.example), then `docker compose up -d --build`.
+# Cloudflare dashboard → Tunnels → Public hostname → Service: http://localhost:8088
+services:
+  web:
+    build:
+      context: .
+      args:
+        EXPO_PUBLIC_SUPABASE_URL: ${EXPO_PUBLIC_SUPABASE_URL}
+        EXPO_PUBLIC_SUPABASE_ANON_KEY: ${EXPO_PUBLIC_SUPABASE_ANON_KEY}
+        EXPO_PUBLIC_VAPID_PUBLIC_KEY: ${EXPO_PUBLIC_VAPID_PUBLIC_KEY}
+        EXPO_PUBLIC_SNOOZE_URL: ${EXPO_PUBLIC_SNOOZE_URL}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8088:80"   # local check only; public traffic comes through the tunnel
+
+  cloudflared:
+    image: cloudflare/cloudflared:2025.4.0
+    container_name: todo
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    # Host networking: the tunnel's ingress points at http://localhost:8088 (the web port above).
+    network_mode: host
+    restart: unless-stopped
+    depends_on:
+      - web
