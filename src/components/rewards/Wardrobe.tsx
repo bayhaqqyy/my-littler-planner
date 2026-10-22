@@ -38,6 +38,9 @@ export function Wardrobe() {
                   onPress={() => equip(it.slot, on && it.slot !== 'outfit' ? undefined : it.id)}
                   style={[
                     { width: isMobile ? '31%' : 104, alignItems: 'center', gap: 4, padding: 8, borderRadius: 16, borderWidth: on ? 2 : 1, borderColor: on ? colors.accent : colors.line, backgroundColor: on ? colors.accentSoft : '#fff' },
+                    // Owned Legenda items get a gold frame and glow.
+                    owned && it.rarity === 'legenda' && !on ? { borderColor: '#EDB52F', borderWidth: 2, backgroundColor: '#FFFBEA' } : null,
+                    owned && it.rarity === 'legenda' ? css({ boxShadow: '0 0 0 2px rgba(255,224,138,.6), 0 6px 18px rgba(237,181,47,.3)' }) : null,
                     css({ cursor: owned ? 'pointer' : 'default' }),
                   ]}
                 >

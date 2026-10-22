@@ -118,9 +118,12 @@ function watchAchievements(): () => void {
     last = deps;
     const key = `mlp-known-achievements:${s.ownerId}`;
     const earned = badgesFromState(s).filter((b) => b.earned);
+    // Legend-rank badges come with a Legenda gift box (each badge once; nothing while gifts are off).
+    const legendBoxes = useStore.getState().claimLegendGifts(earned.filter((b) => b.rank === 6).map((b) => ({ id: b.id, name: b.name })));
     const level = levelFromState(s);
     const known = ls.get<{ ids: string[]; level: number } | null>(key, null);
     ls.set(key, { ids: earned.map((b) => b.id), level: level.level });
+    if (legendBoxes.length) setTimeout(() => useUi.getState().pushToast('gift', `Badge Legenda! Dapat ${legendBoxes.length} kado Legenda 👑`), 2000);
     if (!known) return;
     const fresh = earned.filter((b) => !known.ids.includes(b.id));
     const toast = useUi.getState().pushToast;

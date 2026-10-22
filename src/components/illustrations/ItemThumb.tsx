@@ -1,9 +1,11 @@
 import Svg from 'react-native-svg';
 import { ITEM_BY_ID } from '@/domain';
 import { MiniAzza } from './MiniAzza';
+import { MORE_PETS } from './MoreItems';
 import { BearArt, BunnyArt, ChickArt, KittyArt, SheepArt, TulipArt } from './Critters';
 
 const PETS: Record<string, (p: { x?: number; y?: number; s?: number }) => React.JSX.Element> = {
+  ...MORE_PETS,
   'pet-kelinci': BunnyArt, 'pet-anak-ayam': ChickArt, 'pet-kucing': KittyArt, 'pet-beruang': BearArt, 'pet-domba': SheepArt,
 };
 

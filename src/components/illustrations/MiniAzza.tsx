@@ -1,5 +1,6 @@
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 import type { Wardrobe } from '@/domain';
+import { HIDES_DEFAULT_BOW, MORE_OUTFITS, MORE_PETS, MoreExtra, MoreGlasses, MoreHairItem, MoreOutfitBack, MoreOutfitDeco } from './MoreItems';
 import { BearArt, BunnyArt, ButterflyShape, ChickArt, CloudShape, Eye, Cheeks, HeartShape, KittyArt, SheepArt, StarShape } from './Critters';
 
 export type Pose = 'happy' | 'study' | 'rest' | 'surprised' | 'dance';
@@ -62,7 +63,7 @@ function HairFront({ hair }: { hair?: string }) {
       {/* bangs */}
       <Path d="M28 50 C30 30 44 22 60 22 C76 22 90 30 92 50 C86 44 80 40 74 42 C72 36 66 34 62 40 C58 34 50 34 47 41 C40 38 33 42 28 50Z" fill={HAIR} />
       <Path d="M44 30 Q52 26 58 28" stroke="#A9714F" strokeWidth={2} fill="none" strokeLinecap="round" opacity={0.7} />
-      {hair !== 'hair-pita-pink' && hair !== 'hair-bando-kelinci' && (
+      {hair !== 'hair-pita-pink' && hair !== 'hair-bando-kelinci' && !HIDES_DEFAULT_BOW.has(hair ?? '') && (
         <G>
           <Path d="M60 22 L52 17 L52 27Z M60 22 L68 17 L68 27Z" fill="#FF9EC2" stroke="#F06A9B" strokeWidth={0.8} strokeLinejoin="round" />
           <Circle cx={60} cy={22} r={2.4} fill="#F06A9B" />
@@ -128,7 +129,7 @@ function HairItem({ id }: { id?: string }) {
         </G>
       );
     default:
-      return null;
+      return <MoreHairItem id={id} />;
   }
 }
 
@@ -159,18 +160,19 @@ function Glasses({ id }: { id?: string }) {
         </G>
       );
     default:
-      return null;
+      return <MoreGlasses id={id} />;
   }
 }
 
 function Body({ outfit, pose }: { outfit: string; pose: Pose }) {
-  const o = OUTFIT[outfit] ?? OUTFIT['outfit-kaos-pink'];
+  const o = OUTFIT[outfit] ?? MORE_OUTFITS[outfit] ?? OUTFIT['outfit-kaos-pink'];
   const armL = pose === 'dance' ? 'M40 96 Q28 84 26 74' : 'M40 96 Q32 104 36 112';
   const armR = pose === 'dance' ? 'M80 96 Q92 84 94 74' : 'M80 96 Q88 104 84 112';
   const handL = pose === 'dance' ? [26, 73] : [37, 113];
   const handR = pose === 'dance' ? [94, 73] : [83, 113];
   return (
     <G>
+      <MoreOutfitBack id={outfit} />
       {/* legs */}
       <Rect x={49} y={118} width={8} height={12} rx={4} fill={SKIN} stroke={SKIN_LINE} strokeWidth={1} />
       <Rect x={63} y={118} width={8} height={12} rx={4} fill={SKIN} stroke={SKIN_LINE} strokeWidth={1} />
@@ -213,6 +215,7 @@ function Body({ outfit, pose }: { outfit: string; pose: Pose }) {
       )}
       {outfit === 'outfit-kaos-pink' && <HeartShape x={55} y={98} s={0.5} color="#fff" />}
       {outfit === 'outfit-sweater-mint' && <Path d="M44 112 Q60 116 76 112" stroke="#8CCB9F" strokeWidth={2} fill="none" />}
+      <MoreOutfitDeco id={outfit} />
       {/* collar */}
       <Path d="M52 86 Q60 92 68 86" stroke={o.trim} strokeWidth={2} fill="none" strokeLinecap="round" />
       {/* arms */}
@@ -252,7 +255,7 @@ function Extra({ id, layer }: { id?: string; layer: 'back' | 'front' }) {
       </G>
     );
   }
-  if (layer === 'back') return null;
+  if (layer === 'back') return <MoreExtra id={id} layer="back" />;
   switch (id) {
     case 'extra-balon':
       return (
@@ -274,7 +277,7 @@ function Extra({ id, layer }: { id?: string; layer: 'back' | 'front' }) {
     case 'extra-awan':
       return <CloudShape x={74} y={-2} s={0.7} color="#E2F2FD" />;
     default:
-      return null;
+      return <MoreExtra id={id} layer="front" />;
   }
 }
 
@@ -290,7 +293,10 @@ function Pet({ id }: { id?: string }) {
     case 'pet-kucing': return <KittyArt {...at} y={102} />;
     case 'pet-beruang': return <BearArt {...at} y={102} />;
     case 'pet-domba': return <SheepArt {...at} y={98} />;
-    default: return null;
+    default: {
+      const Art = id ? MORE_PETS[id] : undefined;
+      return Art ? <Art {...at} /> : null;
+    }
   }
 }
 

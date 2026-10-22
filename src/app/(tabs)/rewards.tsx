@@ -1,3 +1,5 @@
+import { FEATURES } from '@/config/features';
+import { disabledLook, GiftsDisabledNote } from '@/components/rewards/GiftsDisabled';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { RARITY_LABEL, type GiftBox } from '@/domain';
@@ -12,7 +14,7 @@ import { Wardrobe } from '@/components/rewards/Wardrobe';
 import { BadgeGrid, LevelCard, StreakCard } from '@/components/rewards/Cards';
 import { colors, giftColors } from '@/theme/theme';
 
-const ORDER = { streak: 0, super: 1, langka: 2, biasa: 3 } as const;
+const ORDER = { legenda: 0, streak: 1, super: 2, langka: 3, biasa: 4 } as const;
 
 export default function RewardsScreen() {
   const giftBoxes = useStore((s) => s.giftBoxes);
@@ -23,13 +25,18 @@ export default function RewardsScreen() {
   return (
     <Page title="Rewards" subtitle="Kado, lemari, level, dan streak-mu ✨" actions={<HeaderActions />}>
       <Card title="Kado belum dibuka" right={<T v="muted">{gifts.length} kado</T>}>
+        {!FEATURES.gifts && <View style={{ marginBottom: 10 }}><GiftsDisabledNote /></View>}
         {gifts.length === 0 ? (
-          <EmptyState title="Belum ada kado" sub="Selesaikan tugas untuk mendapatkan kado 🎁" />
+          <View style={FEATURES.gifts ? null : disabledLook}>
+            <EmptyState title="Belum ada kado" sub={FEATURES.gifts ? 'Selesaikan tugas untuk mendapatkan kado 🎁' : 'Untuk sementara tugas yang selesai tidak memberi kado.'} />
+          </View>
         ) : (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+          <View style={[{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }, FEATURES.gifts ? null : disabledLook]} aria-disabled={!FEATURES.gifts}>
             {gifts.map((g) => (
               <Pressable key={g.id} accessibilityRole="button" accessibilityLabel={`Buka kado ${RARITY_LABEL[g.rarity]} dari ${g.source}${g.early ? ', bonus selesai lebih awal' : ''}`}
-                onPress={() => setOpening(g)}
+                disabled={!FEATURES.gifts}
+                accessibilityState={{ disabled: !FEATURES.gifts }}
+                onPress={() => { if (FEATURES.gifts) setOpening(g); }}
                 style={({ pressed }) => [
                   { width: 118, alignItems: 'center', gap: 4, padding: 10, borderRadius: 18, borderWidth: 1, borderColor: giftColors[g.rarity].ribbon, backgroundColor: '#fff', transform: [{ scale: pressed ? 0.96 : 1 }] },
                   css({ cursor: 'pointer', boxShadow: g.early ? '0 0 0 2px #FFE08A, 0 6px 18px rgba(237,181,47,.35)' : '0 4px 12px rgba(200,140,170,.12)' }),

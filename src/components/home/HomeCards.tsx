@@ -1,3 +1,5 @@
+import { FEATURES } from '@/config/features';
+import { disabledLook, GiftsDisabledNote } from '@/components/rewards/GiftsDisabled';
 import { useMemo, type ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
@@ -269,15 +271,16 @@ export function GiftCard({ streak }: { streak: number }) {
   const top = gifts.find((g) => g.rarity === 'streak') ?? gifts.find((g) => g.rarity === 'super') ?? gifts.find((g) => g.rarity === 'langka') ?? gifts[0];
   return (
     <Card title="Kado kamu">
-      <Row gap={12}>
+      {!FEATURES.gifts && <View style={{ marginBottom: 10 }}><GiftsDisabledNote /></View>}
+      <Row gap={12} style={FEATURES.gifts ? undefined : disabledLook}>
         {top ? <GiftBoxArt size={60} rarity={top.rarity} /> : <Svg width={44} height={44} viewBox="0 0 40 40" aria-hidden><DaisyArt /></Svg>}
         <View style={{ flex: 1, gap: 2 }}>
           <T v="body" style={{ fontFamily: fonts.bold }}>{gifts.length ? `${gifts.length} kado belum dibuka` : 'Belum ada kado baru'}</T>
           <Row gap={4}><Flame size={18} active={streak > 0} /><T v="muted">Streak {streak} hari</T></Row>
-          {!gifts.length && <T v="muted">Selesaikan tugas untuk dapat kado 🎁</T>}
+          {!gifts.length && <T v="muted">{FEATURES.gifts ? 'Selesaikan tugas untuk dapat kado 🎁' : 'Untuk sementara tugas yang selesai tidak memberi kado.'}</T>}
         </View>
       </Row>
-      <Button small label={gifts.length ? 'Buka kado' : 'Lihat Rewards'} style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={() => router.navigate('/rewards')} />
+      <Button small disabled={!FEATURES.gifts} label={gifts.length ? 'Buka kado' : 'Lihat Rewards'} style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={() => router.navigate('/rewards')} />
     </Card>
   );
 }

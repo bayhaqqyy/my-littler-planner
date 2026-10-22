@@ -3,7 +3,8 @@ export type Priority = 'rendah' | 'sedang' | 'tinggi';
 export type Repeat = 'none' | 'daily' | 'weekdays' | 'weekly';
 /** 'scheduled' has start/end times; 'deadline' has one due time (PRD Fitur Deadline). */
 export type TaskKind = 'scheduled' | 'deadline';
-export type Rarity = 'default' | 'biasa' | 'langka' | 'super' | 'streak';
+/** 'legenda': only from Legend-rank badges. */
+export type Rarity = 'default' | 'biasa' | 'langka' | 'super' | 'streak' | 'legenda';
 export type Mood = 'senang' | 'biasa' | 'sedih' | 'capek' | 'semangat';
 export type Slot = 'hair' | 'outfit' | 'glasses' | 'pet' | 'extra';
 
@@ -101,6 +102,8 @@ export interface GiftBox {
   id: string; rarity: Exclude<Rarity, 'default'>; source: string; itemId?: string; createdAt: string;
   /** Finished a deadline ≥ 24 h early: better odds, extra sparkle on the box. */
   early?: boolean;
+  /** Chance (0–1) the box holds a new item, set from the task's category when earned. */
+  newChance?: number;
 }
 
 export interface Item {
@@ -155,6 +158,8 @@ export interface Settings {
 export interface Progress {
   streakClaimed: number[];
   celebratedDates: string[];
+  /** Legend-rank badges whose legendary gift was already given. */
+  legendClaimed?: string[];
 }
 
 export const CATEGORIES: Category[] = ['kuliah', 'belajar', 'tugas', 'istirahat', 'olahraga', 'pribadi'];
@@ -170,4 +175,4 @@ export const CATEGORY_EMOJI: Record<Category, string> = {
 };
 export const PRIORITY_LABEL: Record<Priority, string> = { rendah: 'Rendah', sedang: 'Sedang', tinggi: 'Tinggi' };
 export const MOOD_LABEL: Record<Mood, string> = { senang: 'Senang', biasa: 'Biasa', sedih: 'Sedih', capek: 'Capek', semangat: 'Semangat' };
-export const RARITY_LABEL: Record<Rarity, string> = { default: 'Bawaan', biasa: 'Biasa', langka: 'Langka', super: 'Super Langka', streak: 'Edisi Streak' };
+export const RARITY_LABEL: Record<Rarity, string> = { default: 'Bawaan', biasa: 'Biasa', langka: 'Langka', super: 'Super Langka', streak: 'Edisi Streak', legenda: 'Legenda' };

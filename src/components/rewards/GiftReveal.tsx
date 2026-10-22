@@ -42,7 +42,7 @@ export function GiftReveal({ box, onClose }: { box?: GiftBox; onClose: () => voi
   const rotate = shake.interpolate({ inputRange: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1], outputRange: ['0deg', '-12deg', '12deg', '-12deg', '0deg', '-12deg', '12deg', '-12deg', '0deg'] });
 
   return (
-    <Sheet visible onClose={onClose} title={stage === 'shake' ? 'Membuka kado…' : item ? 'Yay, dapat item baru!' : 'Bunga kenangan 🌷'}>
+    <Sheet visible onClose={onClose} title={stage === 'shake' ? 'Membuka kado…' : !item ? 'Bunga kenangan 🌷' : res?.duplicate ? 'Isinya item yang sama 😊' : box.rarity === 'legenda' ? 'Item Legenda! 👑' : 'Yay, dapat item baru!'}>
       <View style={{ alignItems: 'center', gap: 10, minHeight: 260, justifyContent: 'center' }}>
         {stage === 'shake' ? (
           <Animated.View style={{ transform: [{ rotate }, { scale: shake.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 1.08, 1.15] }) }] }}>
@@ -58,11 +58,16 @@ export function GiftReveal({ box, onClose }: { box?: GiftBox; onClose: () => voi
             <T v="muted" style={{ textAlign: 'center' }}>
               {item ? item.description : `Semua item sudah kamu miliki! ${character} menyimpan bunga ini sebagai kenangan.`}
             </T>
+            {res?.duplicate && (
+              <View style={{ backgroundColor: '#EFE7EB', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8 }}>
+                <T v="small" style={{ color: '#5E4D66', textAlign: 'center' }}>Kamu sudah punya item ini, jadi tidak ada item baru kali ini. Coba lagi di kado berikutnya!</T>
+              </View>
+            )}
             <T v="muted">Dari: {box.source} · {RARITY_LABEL[box.rarity]}</T>
             
             <Row style={{ marginTop: 6 }}>
-              {item && <Button label="Pakai sekarang" onPress={() => { equip(item.slot, item.id); onClose(); }} />}
-              <Button kind={item ? 'outline' : 'primary'} label={item ? 'Simpan dulu' : 'Oke'} onPress={onClose} />
+              {item && !res?.duplicate && <Button label="Pakai sekarang" onPress={() => { equip(item.slot, item.id); onClose(); }} />}
+              <Button kind={item && !res?.duplicate ? 'outline' : 'primary'} label={item && !res?.duplicate ? 'Simpan dulu' : 'Oke'} onPress={onClose} />
             </Row>
           </Animated.View>
         )}

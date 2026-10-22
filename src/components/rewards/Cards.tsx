@@ -1,3 +1,5 @@
+import { FEATURES } from '@/config/features';
+import { disabledLook, GiftsDisabledNote } from './GiftsDisabled';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { currentStreak, levelEmoji, levelOf, MAX_LEVEL, nextBadges, POINTS, STREAK_MILESTONES, type Badge } from '@/domain';
@@ -51,6 +53,8 @@ function BadgeTile({ b }: { b: Badge }) {
       style={[{ width: 104, flexGrow: 1, padding: 10, borderRadius: 16, borderWidth: 1, borderColor: b.earned ? '#F7CF82' : colors.line, alignItems: 'center', gap: 4, backgroundColor: b.earned ? '#FFF6E6' : '#F7F4F8' }]}>
       <BadgeMedal rank={b.rank} emoji={b.emoji} earned={b.earned} size={64} />
       <T v="chip" style={{ fontSize: 10, color: b.earned ? RANK_COLOR[b.rank] : colors.muted }}>{RANK_LABEL[b.rank]}</T>
+      {/* Legend-rank badges also give a Legenda gift box with a legendary item. */}
+      {b.rank === 6 && <T v="chip" style={{ fontSize: 10, color: '#B5751A', textAlign: 'center' }}>🎁 + kado Legenda</T>}
       <T v="small" numberOfLines={2} style={{ color: b.earned ? colors.text : colors.muted, textAlign: 'center' }}>{b.name}</T>
       <T v="chip" numberOfLines={3} style={{ color: colors.muted, textAlign: 'center', fontSize: 10.5 }}>{b.rule}</T>
       {!b.earned && (
@@ -149,7 +153,9 @@ export function StreakCard() {
           <T v="muted">{active ? 'Pertahankan! Selesaikan minimal 1 tugas setiap hari.' : 'Selesaikan satu tugas hari ini untuk menyalakan api 🔥'}</T>
         </View>
       </Row>
-      <Row wrap style={{ marginTop: 12 }}>
+      {/* Milestones award streak gifts: greyed out while gifts are switched off. */}
+      {!FEATURES.gifts && <View style={{ marginTop: 12 }}><GiftsDisabledNote /></View>}
+      <Row wrap style={[{ marginTop: 12 }, FEATURES.gifts ? null : disabledLook]}>
         {STREAK_MILESTONES.map((m) => {
           const got = claimed.includes(m);
           return (

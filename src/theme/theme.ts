@@ -46,6 +46,7 @@ export const giftColors: Record<Exclude<Rarity, 'default'>, { box: string; ribbo
   langka: { box: '#D9C8FF', ribbon: '#A88BEE' },
   super: { box: '#FFE08A', ribbon: '#EDB52F' },
   streak: { box: '#FFC1D6', ribbon: '#F07BA3' },
+  legenda: { box: '#D9C8FF', ribbon: '#EDB52F' },
 };
 
 export const data = {

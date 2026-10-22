@@ -105,7 +105,10 @@ export function Pill({ text, bg, fg, style }: { text: string; bg: string; fg: st
 export const CategoryPill = ({ c }: { c: Category }) => <Pill text={CATEGORY_LABEL[c]} bg={categoryColors[c].bg} fg={categoryColors[c].text} />;
 export const PriorityPill = ({ p }: { p: Priority }) => <Pill text={PRIORITY_LABEL[p]} bg={priorityColors[p].bg} fg={priorityColors[p].text} />;
 export const RarityPill = ({ r }: { r: Rarity }) =>
-  r === 'default' ? <Pill text="Bawaan" bg="#F3EEF5" fg={colors.muted} /> : <Pill text={RARITY_LABEL[r]} bg={giftColors[r].box} fg={colors.text} />;
+  r === 'default' ? <Pill text="Bawaan" bg="#F3EEF5" fg={colors.muted} />
+    // Legenda stands out: deep purple with gold text.
+    : r === 'legenda' ? <Pill text={`👑 ${RARITY_LABEL[r]}`} bg="#4B4590" fg="#FFE08A" />
+    : <Pill text={RARITY_LABEL[r]} bg={giftColors[r].box} fg={colors.text} />;
 
 /** Selectable chip (filters, options). */
 export function Chip({ label, selected, onPress, color, accessibilityLabel }: { label: string; selected?: boolean; onPress?: () => void; color?: { bg: string; text: string }; accessibilityLabel?: string }) {

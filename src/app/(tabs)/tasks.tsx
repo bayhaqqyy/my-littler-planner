@@ -1,3 +1,4 @@
+import { FEATURES } from '@/config/features';
 import { useMemo, useState } from 'react';
 import { Pressable, View, ScrollView } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -147,7 +148,7 @@ export default function Tasks() {
       break;
     case 'selesai':
       body = renderList(data.done, { showDate: true });
-      empty = { title: 'Belum ada tugas selesai', sub: 'Centang tugas pertamamu untuk dapat kado 🎁' };
+      empty = { title: 'Belum ada tugas selesai', sub: FEATURES.gifts ? 'Centang tugas pertamamu untuk dapat kado 🎁' : 'Centang tugas pertamamu 🌸' };
       break;
     case 'rutin': {
       const items = data.routines.filter((t) => (cat === 'all' || t.category === cat) && matchesSearch(t, q));

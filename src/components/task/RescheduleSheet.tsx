@@ -1,3 +1,4 @@
+import { FEATURES } from '@/config/features';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { addDays, dueAtOf, dueLabel, fromMinutes, isDeadline, toDateStr, toMinutes, wall, wallDate, wallTime, type Task } from '@/domain';
@@ -53,7 +54,7 @@ function DeadlineReschedule({ visible, onClose, task, date, onDone }: { visible:
       <Row wrap>
         {['23:59', '12:00'].map((t) => <Chip key={t} label={t.replace(':', '.')} selected={time === t} onPress={() => setTime(t)} />)}
       </Row>
-      <T v="muted">Bonus selesai lebih awal tetap dihitung dari deadline asli.</T>
+      {FEATURES.gifts && <T v="muted">Bonus selesai lebih awal tetap dihitung dari deadline asli.</T>}
       {err ? <T v="small" style={{ color: colors.danger }} accessibilityLiveRegion="polite">{err}</T> : null}
     </Sheet>
   );

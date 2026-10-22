@@ -122,15 +122,15 @@ describe('early bonus (PRD odds table)', () => {
     expect(earlyBonus(dl(), '2026-10-19', at('2026-10-18T23:00'))).toBe(true);
     expect(earlyBonus(dl(), '2026-10-19', at('2026-10-19T01:00'))).toBe(false);
   });
-  it('odds: normal 70/25/5 · one of (high, early) 55/35/10 · both 45/40/15', () => {
-    expect(rollRarity(dl(), seq(0.69))).toBe('biasa');
-    expect(rollRarity(dl(), seq(0.56), true)).toBe('langka');
-    expect(rollRarity(dl({ priority: 'tinggi' }), seq(0.46), true)).toBe('langka');
-    expect(rollRarity(dl({ priority: 'tinggi' }), seq(0.86), true)).toBe('super');
-    expect(rollRarity(dl({ priority: 'tinggi' }), seq(0.86))).toBe('langka');
+  it('odds: normal 82/15/3 · one of (high, early) 72/22/6 · both 64/28/8', () => {
+    expect(rollRarity(dl(), seq(0.81))).toBe('biasa');
+    expect(rollRarity(dl(), seq(0.73), true)).toBe('langka');
+    expect(rollRarity(dl({ priority: 'tinggi' }), seq(0.65), true)).toBe('langka');
+    expect(rollRarity(dl({ priority: 'tinggi' }), seq(0.93), true)).toBe('super');
+    expect(rollRarity(dl({ priority: 'tinggi' }), seq(0.93))).toBe('langka');
   });
   it('scheduled tasks never get the early bonus', () => {
-    expect(rollRarity(task({ start: '08:00', end: '08:30' }), seq(0.56), true)).toBe('biasa');
+    expect(rollRarity(task({ start: '08:00', end: '08:30' }), seq(0.73), true)).toBe('biasa');
   });
 });
 

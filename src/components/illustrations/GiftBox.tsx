@@ -16,7 +16,9 @@ export function GiftBoxArt({ size = 64, rarity }: { size?: number; rarity: Exclu
       <Circle cx={32} cy={18} r={3.4} fill={c.ribbon} />
       <Circle cx={18} cy={44} r={2} fill="#fff" opacity={0.7} />
       <Circle cx={46} cy={40} r={1.6} fill="#fff" opacity={0.7} />
-      {(rarity === 'super' || rarity === 'streak') && <SparkleShape x={48} y={2} s={0.6} color="#FFD45E" />}
+      {(rarity === 'super' || rarity === 'streak' || rarity === 'legenda') && <SparkleShape x={48} y={2} s={0.6} color="#FFD45E" />}
+      {rarity === 'legenda' && <SparkleShape x={2} y={8} s={0.45} color="#FFFFFF" />}
+      {rarity === 'legenda' && <Path d="M24 8 L28 0 L32 6 L36 0 L40 8Z" fill="#FFD45E" stroke="#E9AE22" strokeWidth={1} />}
     </Svg>
   );
 }

@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import {
   addTime as tAddTime, afterBreak, afterFocus, currentStreak, durationOf, equip as wEquip, focusDelta, ITEM_BY_ID,
   MEMORY_FLOWER, newMilestones, newPhase, occKey, occurrencesOn, pause as tPause, phaseMinutes, pickItem, presetConfig,
-  remainingSec, reschedule as dReschedule, reset as tReset, rollRarity, splitOccKey, start as tStart,
+  remainingSec, reschedule as dReschedule, reset as tReset, rollGift, DEFAULT_NEW_CHANCE, splitOccKey, start as tStart,
   streakItem, toDateStr, isDeadline, earlyBonus, wallToDate, dueAtOf, migrateTask, DEFAULT_DEADLINE_REMINDERS,
 } from '@/domain';
 import type {
@@ -11,6 +11,7 @@ import type {
   TimerPhase, TimerState, Wardrobe,
 } from '@/domain';
 import { idbStorage } from '@/services/storage';
+import { FEATURES } from '@/config/features';
 import { uid } from '@/services/ids';
 import { defaultProgress, defaultSettings, defaultWardrobe } from './defaults';
 
@@ -64,7 +65,8 @@ export interface CompleteResult {
   allDone: boolean;
 }
 
-export interface OpenResult { itemId: string; memory: boolean }
+/** `duplicate`: the box held an item you already own (nothing new). */
+export interface OpenResult { itemId: string; memory: boolean; duplicate: boolean }
 
 export interface Actions {
   hydrated: boolean;
@@ -97,6 +99,8 @@ export interface Actions {
   setTimerPomodoro(cfg: PomodoroConfig): void;
   // rewards
   openGift(id: string): OpenResult | undefined;
+  /** Give one Legenda box per newly earned Legend-rank badge (each badge once). */
+  claimLegendGifts(badges: { id: string; name: string }[]): GiftBox[];
   equip(slot: Slot, itemId?: string): void;
   markCelebrated(date: string): boolean;
   // notes
@@ -229,8 +233,10 @@ export const useStore = create<Store>()(
           res.early = earlyBonus(task, occ.date, now);
           res.late = wallToDate(dueAtOf(task, occ.date, occ)).getTime() < now.getTime();
         }
-        if (!occ.rewarded) {
-          const gift: GiftBox = { id: uid(), rarity: rollRarity(task, Math.random, !!res.early), source: task.title, createdAt: at, ...(res.early ? { early: true } : {}) };
+        // Every task gives a box; the category sets how likely it holds a NEW item (NEW_ITEM_CHANCE).
+        const roll = FEATURES.gifts && !occ.rewarded ? rollGift(task, Math.random, !!res.early) : undefined;
+        if (roll) {
+          const gift: GiftBox = { id: uid(), rarity: roll.rarity, newChance: roll.newChance, source: task.title, createdAt: at, ...(res.early ? { early: true } : {}) };
           giftBoxes[gift.id] = gift;
           entries.push(['gift_boxes', gift.id]);
           res.gift = gift;
@@ -247,7 +253,8 @@ export const useStore = create<Store>()(
         const streak = currentStreak(Object.values(completionLogs), day);
         res.streak = streak;
         const progress = { ...s.progress };
-        for (const m of newMilestones(streak, s.progress.streakClaimed)) {
+        // Milestones aren't claimed while gifts are off, so they can still be given if gifts come back.
+        for (const m of FEATURES.gifts ? newMilestones(streak, s.progress.streakClaimed) : []) {
           const gift: GiftBox = { id: uid(), rarity: 'streak', source: `Streak ${m} hari`, itemId: streakItem(m), createdAt: at };
           giftBoxes[gift.id] = gift;
           entries.push(['gift_boxes', gift.id]);
@@ -431,18 +438,39 @@ export const useStore = create<Store>()(
         const s = get();
         const box = s.giftBoxes[id];
         if (!box) return undefined;
-        let itemId = box.itemId;
-        if (!itemId || s.wardrobe.owned.includes(itemId)) {
-          itemId = pickItem(box.rarity === 'streak' ? 'super' : box.rarity, s.wardrobe.owned);
-        }
+        // Streak boxes hold their fixed item (a super one if it's already owned); other boxes are random
+        // within their rarity and may repeat something you already have.
+        let pick = box.itemId && !s.wardrobe.owned.includes(box.itemId)
+          ? { itemId: box.itemId, duplicate: false }
+          : pickItem(box.rarity === 'streak' ? 'super' : box.rarity, s.wardrobe.owned, Math.random, box.newChance ?? DEFAULT_NEW_CHANCE);
+        const itemId = pick.itemId;
         const giftBoxes = { ...s.giftBoxes };
         delete giftBoxes[id];
         const entries: [Table, string, boolean?][] = [['gift_boxes', id, true]];
         const memory = itemId === MEMORY_FLOWER;
-        const wardrobe = memory ? s.wardrobe : { ...s.wardrobe, owned: [...s.wardrobe.owned, itemId] };
-        if (!memory) entries.push(['wardrobe', 'me']);
+        const isNew = !memory && !pick.duplicate;
+        const wardrobe = isNew ? { ...s.wardrobe, owned: [...s.wardrobe.owned, itemId] } : s.wardrobe;
+        if (isNew) entries.push(['wardrobe', 'me']);
         set({ giftBoxes, wardrobe, ...touch(s, entries) });
-        return { itemId, memory };
+        return { itemId, memory, duplicate: pick.duplicate };
+      },
+
+      claimLegendGifts: (badges) => {
+        if (!FEATURES.gifts) return [];
+        const s = get();
+        const claimed = s.progress.legendClaimed ?? [];
+        const fresh = badges.filter((b) => !claimed.includes(b.id));
+        if (!fresh.length) return [];
+        const at = nowIso();
+        const giftBoxes = { ...s.giftBoxes };
+        const boxes = fresh.map((b) => ({ id: uid(), rarity: 'legenda' as const, source: `Badge ${b.name}`, createdAt: at }));
+        boxes.forEach((g) => { giftBoxes[g.id] = g; });
+        set({
+          giftBoxes,
+          progress: { ...s.progress, legendClaimed: [...claimed, ...fresh.map((b) => b.id)] },
+          ...touch(s, [...boxes.map((g) => ['gift_boxes', g.id] as [Table, string]), ['progress', 'me']]),
+        });
+        return boxes;
       },
 
       equip: (slot, itemId) => set((s) => {

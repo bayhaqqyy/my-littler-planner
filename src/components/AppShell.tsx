@@ -1,3 +1,4 @@
+import { FEATURES } from '@/config/features';
 import { useEffect, useRef, type ReactNode } from 'react';
 import { Animated, Pressable, ScrollView, View } from 'react-native';
 import { router, usePathname } from 'expo-router';
@@ -26,7 +27,7 @@ const isActive = (path: string, href: string) => (href === '/' ? path === '/' : 
 function Sidebar() {
   const path = usePathname();
   const equipped = useStore((s) => s.wardrobe.equipped);
-  const gifts = useStore((s) => Object.keys(s.giftBoxes).length);
+  const gifts = useStore((s) => (FEATURES.gifts ? Object.keys(s.giftBoxes).length : 0));
   const { character } = useCharacterName();
   return (
     <View style={[{ width: 236, paddingVertical: 20, paddingHorizontal: 14, borderRightWidth: 1, borderColor: colors.line, gap: 4 }, css({ backgroundImage: linear(colors.sidebar, 180), position: 'sticky', top: 0, height: '100vh' })]}>
