@@ -2,7 +2,7 @@ import { toDateStr, weekdayOf } from './dates';
 import { ITEMS } from './items';
 import { longestStreak, activeDays } from './streak';
 import { totalFocusSec } from './levels';
-import { CATEGORIES } from './types';
+import { CATEGORIES, moodsOf } from './types';
 import type { CompletionLog, DailyNote, FocusLog, Progress } from './types';
 
 export interface Badge {
@@ -102,7 +102,7 @@ export function badges(input: BadgeInput): Badge[] {
       tiers: [[CATEGORIES.length, 'Explorer']] },
     { group: 'Catatan harian', emoji: '📝', rule: (t) => `Tulis catatan atau refleksi di ${t} hari`, value: notes.filter((n) => n.text.trim() || n.reflection.trim()).length,
       tiers: [[1, 'Dear Diary'], [7, 'Journaler'], [30, 'Storyteller'], [100, 'Memoir']] },
-    { group: 'Mood', emoji: '😊', rule: (t) => `Catat mood di ${t} hari`, value: notes.filter((n) => n.mood).length,
+    { group: 'Mood', emoji: '😊', rule: (t) => `Catat mood di ${t} hari`, value: notes.filter((n) => moodsOf(n).length).length,
       tiers: [[1, 'Mood Check'], [7, 'Feelings Friend'], [30, 'Mood Keeper']] },
     { group: 'Lemari', emoji: '👗', rule: (t) => (t >= extraItems.length ? 'Kumpulkan semua item lemari' : `Kumpulkan ${t} item lemari`), value: ownedExtra,
       tiers: [[5, 'Fashionista'], [15, 'Stylist'], [extraItems.length, 'Collector']] },

@@ -1,6 +1,6 @@
 import { LEVELS, levelFor, levelMin, MAX_LEVEL, points, POINTS, titleFor } from '../levels';
 import { badges, nextBadges } from '../badges';
-import type { CompletionLog } from '../types';
+import { moodsOf, toggleMood, type CompletionLog } from '../types';
 
 const log = (p: Partial<CompletionLog> = {}): CompletionLog => ({
   occurrenceKey: 'k', title: 't', category: 'belajar', completedAt: new Date('2026-10-16T10:00:00').toISOString(), durationMin: 25, timed: false, ...p,
@@ -68,5 +68,17 @@ describe('badges', () => {
     const logs = ['2026-10-10', '2026-10-11', '2026-10-12'].map((d) => log({ completedAt: at(d) }));
     const b = Object.fromEntries(badges({ ...empty, completions: logs, progress: { celebratedDates: ['2026-10-10', '2026-10-11', '2026-10-12'] } }).map((x) => [x.name, x.earned]));
     expect(b).toMatchObject({ 'Warming Up': true, 'Consistency Star': false, 'Super Planner': true, 'Flawless Trio': true });
+  });
+});
+
+describe('multi mood', () => {
+  it('reads old single-mood notes and toggles in picker order', () => {
+    expect(moodsOf({ mood: 'sedih' })).toEqual(['sedih']);
+    expect(moodsOf(undefined)).toEqual([]);
+    const a = toggleMood({ mood: 'capek' }, 'sedih');
+    expect(a).toEqual({ moods: ['sedih', 'capek'], mood: 'sedih' });
+    const b = toggleMood(a, 'badmood');
+    expect(b.moods).toEqual(['sedih', 'capek', 'badmood']);
+    expect(toggleMood(toggleMood(toggleMood(b, 'sedih'), 'capek'), 'badmood')).toEqual({ moods: [], mood: undefined });
   });
 });

@@ -5,7 +5,7 @@ export type Repeat = 'none' | 'daily' | 'weekdays' | 'weekly';
 export type TaskKind = 'scheduled' | 'deadline';
 /** 'legenda': only from Legend-rank badges. */
 export type Rarity = 'default' | 'biasa' | 'langka' | 'super' | 'streak' | 'legenda';
-export type Mood = 'senang' | 'biasa' | 'sedih' | 'capek' | 'semangat';
+export type Mood = 'senang' | 'biasa' | 'sedih' | 'capek' | 'badmood' | 'semangat';
 export type Slot = 'hair' | 'outfit' | 'glasses' | 'pet' | 'extra';
 
 export interface Profile {
@@ -119,7 +119,8 @@ export interface Wardrobe {
   equipped: { hair?: string; outfit: string; glasses?: string; pet?: string; extra?: string };
 }
 
-export interface DailyNote { date: string; text: string; mood?: Mood; reflection: string }
+/** `moods` holds every mood picked that day; `mood` is the older single-mood field (kept = first pick). */
+export interface DailyNote { date: string; text: string; mood?: Mood; moods?: Mood[]; reflection: string }
 
 export interface PushSubscriptionRow {
   id: string;
@@ -164,7 +165,20 @@ export interface Progress {
 
 export const CATEGORIES: Category[] = ['kuliah', 'belajar', 'tugas', 'istirahat', 'olahraga', 'pribadi'];
 export const PRIORITIES: Priority[] = ['tinggi', 'sedang', 'rendah'];
-export const MOODS: Mood[] = ['senang', 'biasa', 'sedih', 'capek', 'semangat'];
+export const MOODS: Mood[] = ['senang', 'biasa', 'sedih', 'capek', 'badmood', 'semangat'];
+
+/** All moods of a note, in picker order (handles notes saved before multi-mood). */
+export function moodsOf(note?: Pick<DailyNote, 'mood' | 'moods'>): Mood[] {
+  const list = note?.moods ?? (note?.mood ? [note.mood] : []);
+  return MOODS.filter((m) => list.includes(m));
+}
+
+/** Patch that toggles one mood on/off for a note. */
+export function toggleMood(note: Pick<DailyNote, 'mood' | 'moods'> | undefined, m: Mood): Pick<DailyNote, 'mood' | 'moods'> {
+  const cur = moodsOf(note);
+  const moods = cur.includes(m) ? cur.filter((x) => x !== m) : MOODS.filter((x) => x === m || cur.includes(x));
+  return { moods, mood: moods[0] };
+}
 export const REMIND_OPTIONS = [0, 1, 5, 10, 15, 30, 60];
 
 export const CATEGORY_LABEL: Record<Category, string> = {
@@ -174,5 +188,5 @@ export const CATEGORY_EMOJI: Record<Category, string> = {
   kuliah: '🎓', belajar: '📚', tugas: '📝', istirahat: '☕', olahraga: '🏃‍♀️', pribadi: '🌷',
 };
 export const PRIORITY_LABEL: Record<Priority, string> = { rendah: 'Rendah', sedang: 'Sedang', tinggi: 'Tinggi' };
-export const MOOD_LABEL: Record<Mood, string> = { senang: 'Senang', biasa: 'Biasa', sedih: 'Sedih', capek: 'Capek', semangat: 'Semangat' };
+export const MOOD_LABEL: Record<Mood, string> = { senang: 'Senang', biasa: 'Biasa', sedih: 'Sedih', capek: 'Capek', badmood: 'Badmood', semangat: 'Semangat' };
 export const RARITY_LABEL: Record<Rarity, string> = { default: 'Bawaan', biasa: 'Biasa', langka: 'Langka', super: 'Super Langka', streak: 'Edisi Streak', legenda: 'Legenda' };

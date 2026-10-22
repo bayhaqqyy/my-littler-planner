@@ -3,7 +3,7 @@ import { Pressable, TextInput, View } from 'react-native';
 import Svg from 'react-native-svg';
 import { format } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
-import { addDays, MOOD_LABEL, MOODS, parseDate, type DailyNote, type Mood } from '@/domain';
+import { addDays, MOOD_LABEL, MOODS, moodsOf, parseDate, toggleMood, type DailyNote, type Mood } from '@/domain';
 import { useStore } from '@/store/store';
 import { useLayout, useToday } from '@/store/hooks';
 import { colors, fonts, INPUT_FONT_SIZE, radius } from '@/theme/theme';
@@ -34,27 +34,28 @@ function useDebouncedNote(date: string) {
   };
 }
 
-function MoodPicker({ value, onChange }: { value?: Mood; onChange: (m: Mood) => void }) {
+function MoodPicker({ value, onToggle }: { value: Mood[]; onToggle: (m: Mood) => void }) {
   return (
-    <View accessibilityRole="radiogroup" accessibilityLabel="Mood hari ini" style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 4 }}>
+    <View accessibilityRole="group" accessibilityLabel="Mood hari ini (boleh pilih lebih dari satu)" style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 2 }}>
       {MOODS.map((m) => {
-        const on = value === m;
+        const on = value.includes(m);
         return (
           <Pressable
             key={m}
-            accessibilityRole="radio"
+            accessibilityRole="checkbox"
             accessibilityState={{ checked: on }}
+            aria-checked={on}
             accessibilityLabel={MOOD_LABEL[m]}
-            onPress={() => onChange(m)}
+            onPress={() => onToggle(m)}
             style={[{ alignItems: 'center', gap: 4, flex: 1, minWidth: 0, paddingVertical: 6, borderRadius: 16, backgroundColor: on ? '#FFF3F7' : 'transparent' }, css({ cursor: 'pointer', transitionDuration: '200ms' })]}
           >
             <View style={[
               { borderRadius: 999, padding: 3, borderWidth: 2.5, borderColor: on ? MOOD_COLORS[m].line : 'transparent', transform: [{ scale: on ? 1.06 : 1 }] },
               css({ transitionDuration: '200ms' }),
             ]}>
-              <MoodFace mood={m} size={on ? 42 : 38} />
+              <MoodFace mood={m} size={on ? 40 : 36} />
             </View>
-            <T v="chip" numberOfLines={1} style={{ fontSize: 11, color: on ? colors.accent : colors.muted, fontFamily: on ? fonts.bold : fonts.semibold }}>{MOOD_LABEL[m]}</T>
+            <T v="chip" numberOfLines={1} style={{ fontSize: 10, letterSpacing: -0.2, color: on ? colors.accent : colors.muted, fontFamily: on ? fonts.bold : fonts.semibold }}>{MOOD_LABEL[m]}</T>
           </Pressable>
         );
       })}
@@ -85,7 +86,7 @@ export default function NotesScreen() {
 
   const isToday = date >= today;
   const previous = useMemo(
-    () => Object.values(notes).filter((n) => n.date !== date && (n.text.trim() || n.reflection.trim() || n.mood)).sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 30),
+    () => Object.values(notes).filter((n) => n.date !== date && (n.text.trim() || n.reflection.trim() || moodsOf(n).length)).sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 30),
     [notes, date],
   );
 
@@ -103,8 +104,8 @@ export default function NotesScreen() {
       </Row>
 
       <View>
-        <Label>Mood hari ini</Label>
-        <MoodPicker value={note?.mood} onChange={(m) => saveNote(date, { mood: m })} />
+        <Label>Mood hari ini · boleh pilih lebih dari satu</Label>
+        <MoodPicker value={moodsOf(note)} onToggle={(m) => saveNote(date, toggleMood(notes[date], m))} />
       </View>
 
       <View>
@@ -158,19 +159,26 @@ export default function NotesScreen() {
       ) : (
         <View style={{ gap: 8 }}>
           {previous.map((n) => {
+            const moods = moodsOf(n);
             const snippet = (n.text.trim() || n.reflection.trim() || 'Hanya mood').replace(/\s+/g, ' ');
             return (
               <Pressable
                 key={n.date}
                 accessibilityRole="button"
-                accessibilityLabel={`Buka catatan ${fmt(n.date, 'EEEE d MMMM')}${n.mood ? `, mood ${MOOD_LABEL[n.mood]}` : ''}`}
+                accessibilityLabel={`Buka catatan ${fmt(n.date, 'EEEE d MMMM')}${moods.length ? `, mood ${moods.map((m) => MOOD_LABEL[m]).join(', ')}` : ''}`}
                 onPress={() => setDate(n.date)}
                 style={({ pressed }) => [
                   { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 10, minHeight: 56, borderRadius: radius.row, borderWidth: 1, borderColor: colors.line, backgroundColor: pressed ? colors.surfaceSoft : '#fff' },
                   css({ cursor: 'pointer' }),
                 ]}
               >
-                {n.mood ? <MoodFace mood={n.mood} size={36} /> : <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#F6EEF3' }} />}
+                {moods.length ? (
+                  <View style={{ flexDirection: 'row', width: 36 + Math.min(moods.length - 1, 2) * 14 }}>
+                    {moods.slice(0, 3).map((m, i) => (
+                      <View key={m} style={{ marginLeft: i ? -22 : 0, zIndex: 3 - i, borderRadius: 999, backgroundColor: '#fff' }}><MoodFace mood={m} size={36} /></View>
+                    ))}
+                  </View>
+                ) : <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#F6EEF3' }} />}
                 <View style={{ flex: 1, minWidth: 0 }}>
                   <T v="small" style={{ textTransform: 'capitalize' }}>{fmt(n.date, 'EEE, d MMM yyyy')}</T>
                   <T v="muted" numberOfLines={2}>{snippet}</T>

@@ -8,6 +8,7 @@ export const MOOD_COLORS: Record<Mood, { face: string; line: string }> = {
   biasa: { face: '#C5E6FA', line: '#9CD3F5' },
   sedih: { face: '#D6C5F4', line: '#B49BE8' },
   capek: { face: '#F2E2C9', line: '#E2C9A3' },
+  badmood: { face: '#FFC7B5', line: '#F29A82' },
   semangat: { face: '#FFB6CF', line: '#F48FB1' },
 };
 
@@ -47,6 +48,15 @@ export function MoodFace({ mood, size = 40 }: { mood: Mood; size?: number }) {
           <Path d="M11.5 18.5 H17 M23 18.5 H28.5" stroke={INK} strokeWidth={1.8} strokeLinecap="round" />
           <Ellipse cx={20} cy={26.5} rx={2.4} ry={1.8} fill={INK} />
           <Path d="M29 8 h4 l-4 4 h4" stroke="#B49BE8" strokeWidth={1.3} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </G>
+      )}
+      {mood === 'badmood' && (
+        <G>
+          <Path d="M11.5 14 L17 16.2 M28.5 14 L23 16.2" stroke={INK} strokeWidth={1.8} strokeLinecap="round" />
+          <Circle cx={14.5} cy={19.5} r={2} fill={INK} />
+          <Circle cx={25.5} cy={19.5} r={2} fill={INK} />
+          <Path d="M15 27 q2.5 -2.4 5 0 q2.5 2.4 5 0" stroke={INK} strokeWidth={1.8} fill="none" strokeLinecap="round" />
+          <Path d="M30 6.5 v2.5 M30 12 v2.5 M26.5 10.5 h2.5 M31 10.5 h2.5" stroke="#E8556F" strokeWidth={1.6} strokeLinecap="round" />
         </G>
       )}
       {mood === 'semangat' && (
