@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import Svg from 'react-native-svg';
 import { format, formatDistanceToNow } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import {
   addDays, CATEGORY_EMOJI, CATEGORY_LABEL, categoryMinutes, completionsOn, currentStreak, daySummary, last4Weeks, last7,
-  levelOf, longestStreak, mostProductiveWeekday, overdue, parseDate, range, startOfWeek, weeklyCompletion,
+  levelOf, longestStreak, mostProductiveWeekday, overdue, parseDate, range, startOfWeek, studyMinutes, uniqueCompletions, weeklyCompletion,
 } from '@/domain';
 import { useStore } from '@/store/store';
 import { useLayout, useTaskList, useToday } from '@/store/hooks';
@@ -14,19 +14,30 @@ import { HeaderActions, Page } from '@/components/AppShell';
 import { Card, css, Row, Segmented, T } from '@/components/ui/primitives';
 import { BarChart, Donut, ProgressBar } from '@/components/ui/Charts';
 import { BearArt, Flame, SheepArt } from '@/components/illustrations';
+import { Icon } from '@/components/ui/Icon';
+import { fmtMin, StatDetailSheet, type StatKind } from '@/components/progress/StatDetails';
 
 const WEEKDAY_NAMES = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
-const fmtMin = (m: number) => (m >= 60 ? `${Math.floor(m / 60)} j ${m % 60} m` : `${m} m`);
 
-function Stat({ label, value, sub, grad, valueColor }: { label: string; value: string; sub?: string; grad: string[]; valueColor?: string }) {
+function Stat({ label, value, sub, grad, valueColor, onPress }: { label: string; value: string; sub?: string; grad: string[]; valueColor?: string; onPress: () => void }) {
   return (
-    <View style={[{ flex: 1, minWidth: 140, borderRadius: 20, borderWidth: 1, borderColor: colors.line, padding: 16, gap: 2 }, css({ backgroundImage: linear(grad), boxShadow: '0 2px 10px rgba(200,140,170,.08)' })]}
-      accessibilityLabel={`${label}: ${value}${sub ? `, ${sub}` : ''}`}>
-      <T v="small" style={{ color: colors.muted }}>{label}</T>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${label}: ${value}${sub ? `, ${sub}` : ''}. Lihat detail`}
+      style={({ pressed }) => [
+        { flex: 1, minWidth: 140, borderRadius: 20, borderWidth: 1, borderColor: colors.line, padding: 16, gap: 2, transform: [{ scale: pressed ? 0.98 : 1 }] },
+        css({ backgroundImage: linear(grad), boxShadow: '0 2px 10px rgba(200,140,170,.08)', cursor: 'pointer', transitionDuration: '150ms' }),
+      ]}
+    >
+      <Row style={{ justifyContent: 'space-between' }}>
+        <T v="small" style={{ color: colors.muted }}>{label}</T>
+        <Icon name="chevron-right" size={16} />
+      </Row>
       <T v="greeting" style={{ fontSize: 26, color: valueColor ?? colors.text, fontVariant: ['tabular-nums'] }}>{value}</T>
       {sub ? <T v="muted">{sub}</T> : null}
-    </View>
+    </Pressable>
   );
 }
 
@@ -39,8 +50,9 @@ export default function ProgressScreen() {
   const { isDesktop, isMobile } = useLayout();
   const [period, setPeriod] = useState<'7' | '4w'>('7');
   const [metric, setMetric] = useState<'tasks' | 'focus'>('tasks');
+  const [detail, setDetail] = useState<StatKind>();
 
-  const logs = useMemo(() => Object.values(logsRec), [logsRec]);
+  const logs = useMemo(() => uniqueCompletions(Object.values(logsRec)), [logsRec]);
   const focus = useMemo(() => Object.values(focusRec), [focusRec]);
   const weekStart = startOfWeek(today);
 
@@ -51,7 +63,7 @@ export default function ProgressScreen() {
   const pending = overdueCount + todaySum.pending;
   const weekly = weeklyCompletion(tasks, today, occs);
   const days7 = last7(logs, focus, today);
-  const focus7 = days7.reduce((s, d) => s + d.focusMin, 0);
+  const study7 = studyMinutes(logs, focus, addDays(today, -6), today);
   const weeks4 = last4Weeks(logs, focus, today);
   const cats = categoryMinutes(logs, focus, addDays(today, -29));
   const catTotal = cats.reduce((s, c) => s + c.minutes, 0);
@@ -69,10 +81,10 @@ export default function ProgressScreen() {
 
   const stats = (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-      <Stat label="Tugas selesai" value={String(doneThisWeek)} sub="minggu ini" grad={data.stat.done} />
-      <Stat label="Tugas tertunda" value={String(pending)} sub={overdueCount ? `${overdueCount} terlewat` : 'hari ini'} grad={data.stat.pending} />
-      <Stat label="Waktu belajar" value={fmtMin(focus7)} sub="7 hari terakhir" grad={data.stat.progress} />
-      <Stat label="Streak" value={`${streak} hari`} sub={`terpanjang ${best} hari`} grad={data.stat.streak} valueColor={data.streakNumber} />
+      <Stat label="Tugas selesai" value={String(doneThisWeek)} sub="minggu ini" grad={data.stat.done} onPress={() => setDetail('done')} />
+      <Stat label="Tugas tertunda" value={String(pending)} sub={overdueCount ? `${overdueCount} terlewat` : 'hari ini'} grad={data.stat.pending} onPress={() => setDetail('pending')} />
+      <Stat label="Waktu belajar" value={fmtMin(study7)} sub="7 hari · timer + tugas selesai" grad={data.stat.progress} onPress={() => setDetail('study')} />
+      <Stat label="Streak" value={`${streak} hari`} sub={`terpanjang ${best} hari`} grad={data.stat.streak} valueColor={data.streakNumber} onPress={() => setDetail('streak')} />
     </View>
   );
 
@@ -176,6 +188,7 @@ export default function ProgressScreen() {
   return (
     <Page title="Progress" subtitle="Lihat seberapa jauh kamu sudah melangkah ✨" actions={<HeaderActions />}>
       {stats}
+      <StatDetailSheet kind={detail} onClose={() => setDetail(undefined)} logs={logs} today={today} />
       {isDesktop ? (
         <>
           {/* Row children get the flex share; cards inside only grow vertically (flex on a stacked card squeezes its height). */}

@@ -1,4 +1,4 @@
-import { categoryMinutes, daySummary, weekDots, routineDots } from '../stats';
+import { categoryMinutes, daySummary, studyDetail, studyMinutes, uniqueCompletions, weekDots, routineDots } from '../stats';
 import { greeting } from '../dates';
 import { taskFormSchema, usernameSchema } from '../validation';
 import { task } from './helpers';
@@ -40,4 +40,40 @@ describe('validation', () => {
     expect(usernameSchema.safeParse('Azza!').success).toBe(false);
     expect(usernameSchema.safeParse('a'.repeat(21)).success).toBe(false);
   });
+});
+
+it('studyMinutes: timer focus + study tasks done without timer, no duplicates', () => {
+  const at = (d: string) => new Date(`${d}T15:00:00`).toISOString();
+  const l = (k: string, category: any, durationMin: number, timed: boolean, d: string) => ({ occurrenceKey: k, title: k, category, durationMin, timed, completedAt: at(d) });
+  const logs = [
+    l('a@1', 'belajar', 53, true, '2026-10-19'),   // timed: counted through focus instead
+    l('a@1', 'belajar', 53, true, '2026-10-19'),   // same occurrence logged twice
+    l('b@1', 'belajar', 81, false, '2026-10-19'),
+    l('b@1', 'belajar', 81, false, '2026-10-19'),  // duplicate from a second device
+    l('c@1', 'tugas', 60, false, '2026-10-20'),
+    l('d@1', 'istirahat', 30, false, '2026-10-20'), // not study
+    l('e@1', 'kuliah', 100, false, '2026-10-10'),   // out of range
+  ];
+  const focus = [
+    { date: '2026-10-19', category: 'belajar' as const, seconds: 2400 },
+    { date: '2026-10-19', category: 'belajar' as const, seconds: 780 }, // another device's log
+    { date: '2026-10-19', category: 'istirahat' as const, seconds: 600 },
+  ];
+  expect(uniqueCompletions(logs)).toHaveLength(5);
+  expect(studyMinutes(logs, focus, '2026-10-18', '2026-10-24')).toBe(53 + 81 + 60);
+});
+
+it('studyDetail matches studyMinutes and groups per day', () => {
+  const at = (d: string) => new Date(`${d}T15:00:00`).toISOString();
+  const logs = [
+    { occurrenceKey: 'b@1', title: 'Belajar A', category: 'belajar' as const, durationMin: 81, timed: false, completedAt: at('2026-10-19') },
+    { occurrenceKey: 'c@1', title: 'Tugas B', category: 'tugas' as const, durationMin: 60, timed: false, completedAt: at('2026-10-20') },
+  ];
+  const focus = [
+    { date: '2026-10-19', category: 'belajar' as const, seconds: 2400 },
+    { date: '2026-10-19', category: 'belajar' as const, seconds: 780 },
+  ];
+  const d = studyDetail(logs, focus, '2026-10-18', '2026-10-24');
+  expect(d.map((x) => [x.date, x.timerMin, x.taskMin])).toEqual([['2026-10-20', 0, 60], ['2026-10-19', 53, 81]]);
+  expect(d.reduce((s, x) => s + x.total, 0)).toBe(studyMinutes(logs, focus, '2026-10-18', '2026-10-24'));
 });

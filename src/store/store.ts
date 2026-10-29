@@ -120,7 +120,13 @@ export type Store = DataState & Actions;
 
 const nowIso = () => new Date().toISOString();
 const today = () => toDateStr(new Date());
-export const focusKey = (date: string, category: string) => `${date}|${category}`;
+/** Id of this browser/app install. Focus logs are kept per device so two devices never overwrite each other's time. */
+const deviceId = (() => {
+  let id: string | null = null;
+  try { id = localStorage.getItem('mlp-device'); if (!id) { id = Math.random().toString(36).slice(2, 10); localStorage.setItem('mlp-device', id); } } catch { /* storage unavailable */ }
+  return id ?? 'local';
+})();
+export const focusKey = (date: string, category: string) => `${date}|${category}|${deviceId}`;
 
 export const emptyData = (): DataState => ({
   ownerId: undefined,
@@ -216,6 +222,8 @@ export const useStore = create<Store>()(
       }),
 
       complete: (key, opts) => {
+        // Bank the running timer's time first: completing clears the timer.
+        if (get().timer?.occurrenceKey === key) get().timerTick(true);
         const s = get();
         const occ = getOcc(s, key);
         const task = s.tasks[occ.taskId];

@@ -76,6 +76,64 @@ export function last4Weeks(logs: CompletionLog[], focus: FocusLog[], today: stri
   });
 }
 
+/** Categories that count as "Waktu belajar". */
+export const STUDY_CATEGORIES: Category[] = ['kuliah', 'belajar', 'tugas'];
+
+/** One log per occurrence (the latest): two devices can each log the same completion. */
+export function uniqueCompletions<L extends CompletionLog>(logs: L[]): L[] {
+  const by = new Map<string, L>();
+  for (const l of logs) { const p = by.get(l.occurrenceKey); if (!p || p.completedAt < l.completedAt) by.set(l.occurrenceKey, l); }
+  return [...by.values()];
+}
+
+/**
+ * Study minutes between two dates (inclusive): timer focus on study categories, plus the planned
+ * duration of study tasks completed without the timer (same rule as categoryMinutes).
+ */
+export function studyMinutes(logs: CompletionLog[], focus: FocusLog[], from: string, to: string): number {
+  let min = 0;
+  for (const f of focus) if (f.date >= from && f.date <= to && STUDY_CATEGORIES.includes(f.category)) min += f.seconds / 60;
+  for (const l of uniqueCompletions(logs)) {
+    if (l.timed || !STUDY_CATEGORIES.includes(l.category)) continue;
+    const d = toDateStr(new Date(l.completedAt));
+    if (d >= from && d <= to) min += l.durationMin;
+  }
+  return Math.round(min);
+}
+
+export interface StudyItem { title: string; category: Category; min: number; timed: boolean }
+export interface StudyDay { date: string; timerMin: number; taskMin: number; total: number; items: StudyItem[] }
+
+/** Day-by-day breakdown behind studyMinutes (newest first): timer sessions per category + tasks done without timer. */
+export function studyDetail(logs: CompletionLog[], focus: FocusLog[], from: string, to: string): StudyDay[] {
+  const days = new Map<string, StudyDay>();
+  const day = (d: string) => { let x = days.get(d); if (!x) { x = { date: d, timerMin: 0, taskMin: 0, total: 0, items: [] }; days.set(d, x); } return x; };
+  const timer = new Map<string, number>(); // date|category → seconds (summed over devices)
+  for (const f of focus) {
+    if (f.date < from || f.date > to || !STUDY_CATEGORIES.includes(f.category)) continue;
+    const k = `${f.date}|${f.category}`;
+    timer.set(k, (timer.get(k) ?? 0) + f.seconds);
+  }
+  for (const [k, sec] of timer) {
+    const [d, c] = k.split('|') as [string, Category];
+    const min = Math.round(sec / 60);
+    if (!min) continue;
+    const x = day(d);
+    x.timerMin += min;
+    x.items.push({ title: 'Sesi timer', category: c, min, timed: true });
+  }
+  for (const l of uniqueCompletions(logs)) {
+    if (l.timed || !STUDY_CATEGORIES.includes(l.category) || l.durationMin <= 0) continue;
+    const d = toDateStr(new Date(l.completedAt));
+    if (d < from || d > to) continue;
+    const x = day(d);
+    x.taskMin += l.durationMin;
+    x.items.push({ title: l.title, category: l.category, min: l.durationMin, timed: false });
+  }
+  for (const x of days.values()) { x.total = x.timerMin + x.taskMin; x.items.sort((a, b) => b.min - a.min); }
+  return [...days.values()].sort((a, b) => (a.date < b.date ? 1 : -1));
+}
+
 /** Minutes per category: focus time + planned duration of tasks completed without the timer. */
 export function categoryMinutes(logs: CompletionLog[], focus: FocusLog[], fromDate?: string) {
   const mins: Record<Category, number> = { kuliah: 0, belajar: 0, tugas: 0, istirahat: 0, olahraga: 0, pribadi: 0 };
