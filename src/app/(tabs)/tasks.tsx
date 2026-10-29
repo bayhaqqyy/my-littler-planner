@@ -8,8 +8,8 @@ import {
   type OccView,
 } from '@/domain';
 import { useStore } from '@/store/store';
-import { useNow, useTaskList, useToday } from '@/store/hooks';
-import { categoryColors, colors, radius, urgencyColors } from '@/theme/theme';
+import { useCharacterName, useNow, useTaskList, useToday } from '@/store/hooks';
+import { categoryColors, checklist, colors, radius, urgencyColors } from '@/theme/theme';
 import { HeaderActions, Page } from '@/components/AppShell';
 import { Button, Card, Chip, css, Field, Row, Segmented, T, CategoryPill } from '@/components/ui/primitives';
 import type { IconName } from '@/components/ui/Icon';
@@ -17,6 +17,7 @@ import { Icon } from '@/components/ui/Icon';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { TaskRow } from '@/components/task/TaskRow';
 import { fmtDate, repeatText } from '@/components/task/schedule';
+import { ChecklistHeader, ChecklistNote } from '@/components/task/Checklist';
 
 type Tab = 'hari-ini' | 'deadline' | 'mendatang' | 'terlewat' | 'selesai' | 'rutin';
 const TABS: { key: Tab; label: string; icon?: IconName }[] = [
@@ -38,7 +39,7 @@ function UrgencyLegend() {
       {items.map((it) => (
         <Row key={it.label} gap={6}>
           <View style={{ width: 14, height: 14, borderRadius: 4, backgroundColor: it.c.bg, borderWidth: 1, borderColor: it.c.text }} />
-          <T v="muted">{it.label}</T>
+          <T v="muted" style={{ color: checklist.ink }}>{it.label}</T>
         </Row>
       ))}
     </Row>
@@ -84,6 +85,8 @@ export default function Tasks() {
     return { todayList, upcoming, late, done, routines, deadlines };
   }, [tasks, occs, today, now]);
 
+  const { username } = useCharacterName();
+  const todayDone = data.todayList.filter((v) => v.done).length;
   const conflicts = useMemo(() => conflictingIds(tasks, today, occs), [tasks, today, occs]);
   const counts: Record<Tab, number> = {
     'hari-ini': data.todayList.filter((v) => !v.done).length,
@@ -97,12 +100,12 @@ export default function Tasks() {
     if (opts.group) {
       return groupByDate(items).map((g) => (
         <View key={g.date} style={{ gap: 8 }}>
-          <T v="small" style={{ color: colors.accent, marginTop: 6 }} accessibilityRole="header">{g.date === addDays(today, 1) ? 'Besok · ' : ''}{fmtDate(g.date, 'EEEE, d MMMM')}</T>
-          {g.items.map((v) => <TaskRow key={v.key} v={v} />)}
+          <T v="small" style={{ color: checklist.ink, marginTop: 6, paddingHorizontal: 4 }} accessibilityRole="header">{g.date === addDays(today, 1) ? 'Besok · ' : ''}{fmtDate(g.date, 'EEEE, d MMMM')}</T>
+          {g.items.map((v) => <TaskRow key={v.key} v={v} timer />)}
         </View>
       ));
     }
-    return items.map((v) => <TaskRow key={v.key} v={v} showDate={opts.showDate} conflict={opts.markConflicts && !v.done && conflicts.has(v.task.id)} />);
+    return items.map((v) => <TaskRow key={v.key} v={v} timer showDate={opts.showDate} conflict={opts.markConflicts && !v.done && conflicts.has(v.task.id)} />);
   };
 
   let body: React.ReactNode;
@@ -124,10 +127,10 @@ export default function Tasks() {
           </Row>
           {groups.length ? groups.map(({ g, items: list }) => (
             <View key={g} style={{ gap: 8 }}>
-              <T v="small" accessibilityRole="header" style={{ marginTop: 6, color: g === 'terlewat' ? colors.danger : colors.muted, fontFamily: 'Quicksand_700Bold' }}>
+              <T v="small" accessibilityRole="header" style={{ marginTop: 6, paddingHorizontal: 4, color: checklist.ink, fontFamily: 'Quicksand_700Bold' }}>
                 {DEADLINE_GROUP_LABEL[g]}
               </T>
-              {list.map((v) => <TaskRow key={v.key} v={v} />)}
+              {list.map((v) => <TaskRow key={v.key} v={v} timer />)}
             </View>
           )) : (
             <EmptyState title={q || cat !== 'all' ? 'Tidak ada yang cocok' : 'Belum ada deadline'} sub={q || cat !== 'all' ? 'Coba kata kunci atau kategori lain.' : 'Catat tugas yang punya batas pengumpulan di sini 🚩'} />
@@ -181,6 +184,7 @@ export default function Tasks() {
 
   return (
     <Page title="To-Do List" subtitle={fmtDate(today)} actions={<HeaderActions />}>
+      <ChecklistHeader name={username} done={todayDone} total={data.todayList.length} />
       <Segmented label="Daftar tugas" value={tab} onChange={setTab} variant="chips"
         items={TABS.map((t) => ({ key: t.key, label: t.label, icon: t.icon, count: counts[t.key] }))} />
       <Card style={{ gap: 12 }}>
@@ -198,11 +202,15 @@ export default function Tasks() {
           ))}
         </ScrollView>
       </Card>
-      <Card>
-        <View style={{ gap: 8 }}>
-          {body ?? <EmptyState title={q || cat !== 'all' ? 'Tidak ada yang cocok' : empty.title} sub={q || cat !== 'all' ? 'Coba kata kunci atau kategori lain.' : empty.sub} />}
-        </View>
-      </Card>
+      <View style={{ backgroundColor: checklist.panel, borderRadius: 26, padding: 12, gap: 8 }}>
+        <T v="cardTitle" accessibilityRole="header" style={{ color: checklist.ink, paddingHorizontal: 4, fontSize: 17 }}>Tugas {username}</T>
+        {body ?? (
+          <View style={{ backgroundColor: '#fff', borderRadius: 18 }}>
+            <EmptyState title={q || cat !== 'all' ? 'Tidak ada yang cocok' : empty.title} sub={q || cat !== 'all' ? 'Coba kata kunci atau kategori lain.' : empty.sub} />
+          </View>
+        )}
+      </View>
+      <ChecklistNote date={today} />
     </Page>
   );
 }
