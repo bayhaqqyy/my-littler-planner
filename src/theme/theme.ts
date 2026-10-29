@@ -17,6 +17,21 @@ export const colors = {
   pastel: ['#FFDDE5', '#FFF5F0', '#D6C5F4', '#C5E6FA', '#C8E6D3', '#FFE5AE', '#EBD1B8', '#F8DBEC', '#B9E3FC'],
 };
 
+/** Peach "Check List" look of the To-Do page (paper checklist with an inline timer). */
+export const checklist = {
+  paper: '#FFF4EE',
+  panel: '#FAC6B4',
+  header: ['#FFE7DC', '#FFF4EE'],
+  ink: '#5B2C22',
+  inkSoft: '#8A4A3B',
+  accent: '#C2452E',
+  track: '#FBD6C9',
+  ring: '#E8705A',
+  chip: '#FFE6DC',
+  rowShadow: '#F3B19D',
+  progress: ['#F7A389', '#E8705A'],
+};
+
 export const categoryColors: Record<Category, { bg: string; text: string; dot: string }> = {
   kuliah: { bg: '#E2F2FD', text: '#2B6A94', dot: '#9CD3F5' },
   belajar: { bg: '#EFE8FB', text: '#5E44A0', dot: '#C3B0EE' },
