@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ComponentRef, ReactNode, Ref } from 'react';
 import {
   Pressable, ScrollView, Switch as RNSwitch, Text, TextInput, View, type PressableProps, type StyleProp, type TextInputProps,
   type TextProps, type TextStyle, type ViewProps, type ViewStyle,
@@ -163,7 +163,7 @@ export function Label({ children, required }: { children: ReactNode; required?: 
   return <T v="small" style={{ marginBottom: 6, color: colors.muted }}>{children}{required ? <Text style={{ color: colors.danger }}> *</Text> : null}</T>;
 }
 
-export function Field({ error, style, multiline, ...rest }: TextInputProps & { error?: string }) {
+export function Field({ error, style, multiline, ...rest }: TextInputProps & { error?: string; ref?: Ref<ComponentRef<typeof TextInput>> }) {
   return (
     <View>
       <TextInput

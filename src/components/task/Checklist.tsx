@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { useEffect, useLayoutEffect, useRef, useState, type ComponentRef } from 'react';
+import { Pressable, View, type TextInput } from 'react-native';
 import { presetConfig, type PomodoroPreset } from '@/domain';
 import { useStore } from '@/store/store';
 import { checklist, linear } from '@/theme/theme';
@@ -53,6 +53,8 @@ export function ChecklistHeader({ name, done, total }: { name: string; done: num
   );
 }
 
+const NOTE_MIN_HEIGHT = 72;
+
 /** Small lined note for the day (same note as the Notes tab) with a sheep under the tulips. */
 export function ChecklistNote({ date }: { date: string }) {
   const saved = useStore((s) => s.notes[date]?.text ?? '');
@@ -60,6 +62,15 @@ export function ChecklistNote({ date }: { date: string }) {
   const [text, setText] = useState(saved);
   const pending = useRef<ReturnType<typeof setTimeout> | null>(null);
   const editing = useRef(false);
+  const input = useRef<ComponentRef<typeof TextInput>>(null);
+
+  // Grow the box with its text so long notes stay fully visible (on web the input is a <textarea>).
+  useLayoutEffect(() => {
+    const el = input.current as unknown as HTMLTextAreaElement | null;
+    if (!el || typeof el.scrollHeight !== 'number') return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.max(NOTE_MIN_HEIGHT, el.scrollHeight)}px`;
+  }, [text]);
 
   // Follow edits made elsewhere (Notes tab, sync) while not typing here.
   useEffect(() => { if (!editing.current) setText(saved); }, [saved]);
@@ -76,8 +87,8 @@ export function ChecklistNote({ date }: { date: string }) {
     <Row gap={10} style={{ alignItems: 'flex-end' }}>
       <View style={{ flex: 1, minWidth: 0, backgroundColor: '#fff', borderRadius: 20, padding: 12, gap: 4 }}>
         <T v="small" nativeID="checklist-note" style={{ color: checklist.accent, letterSpacing: 0.6 }}>NOTE</T>
-        <Field multiline value={text} onChangeText={onChange} placeholder="Catatan kecil hari ini…" aria-labelledby="checklist-note" accessibilityLabel="Catatan hari ini"
-          style={{ borderWidth: 0, borderRadius: 12, backgroundColor: checklist.paper, minHeight: 72 }} />
+        <Field ref={input} multiline value={text} onChangeText={onChange} placeholder="Catatan kecil hari ini…" aria-labelledby="checklist-note" accessibilityLabel="Catatan hari ini"
+          style={{ borderWidth: 0, borderRadius: 12, backgroundColor: checklist.paper, minHeight: NOTE_MIN_HEIGHT, overflow: 'hidden' }} />
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'flex-end' }} aria-hidden>
         <Tulip size={44} color="#F6A58F" />
