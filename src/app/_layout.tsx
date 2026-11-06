@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { router, Slot } from 'expo-router';
-import { useFonts, Quicksand_500Medium, Quicksand_600SemiBold, Quicksand_700Bold } from '@expo-google-fonts/quicksand';
+import { useFonts } from 'expo-font';
+import { Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold, Nunito_900Black } from '@expo-google-fonts/nunito';
+import { Baloo2_700Bold, Baloo2_800ExtraBold } from '@expo-google-fonts/baloo-2';
 import { AuthGate } from '@/components/auth/AuthGate';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { AppShell } from '@/components/AppShell';
@@ -16,9 +18,9 @@ import { useUi } from '@/store/ui';
 import { colors } from '@/theme/theme';
 
 export default function RootLayout() {
-  const [loaded, fontError] = useFonts({ Quicksand_500Medium, Quicksand_600SemiBold, Quicksand_700Bold });
+  const [loaded, fontError] = useFonts({ Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold, Nunito_900Black, Baloo2_700Bold, Baloo2_800ExtraBold });
   // Never block on fonts: in iOS WebKit (Safari/Chrome/Opera on iPhone) useFonts can stay pending
-  // even after the fonts load. Show the app after a short grace period; Quicksand swaps in when ready.
+  // even after the fonts load. Show the app after a short grace period; the fonts swap in when ready.
   const [fontGraceOver, setFontGraceOver] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setFontGraceOver(true), 1500);

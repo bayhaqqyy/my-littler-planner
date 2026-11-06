@@ -28,7 +28,7 @@ import { colors, radius } from '@/theme/theme';
 export default function SettingsScreen() {
   const { isDesktop } = useLayout();
   return (
-    <Page title="Settings" back>
+    <Page title="Pengaturan" back>
       <View style={{ flexDirection: isDesktop ? 'row' : 'column', gap: 14, alignItems: isDesktop ? 'flex-start' : 'stretch' }}>
         <View style={isDesktop ? { flex: 1, gap: 14, minWidth: 0 } : { gap: 14 }}>
           <ProfileCard />

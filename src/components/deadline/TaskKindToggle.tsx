@@ -1,6 +1,6 @@
 import { Pressable, View } from 'react-native';
 import type { TaskKind } from '@/domain';
-import { colors, shadow } from '@/theme/theme';
+import { colors, shadow, fonts } from '@/theme/theme';
 import { css, T } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/Icon';
 
@@ -32,7 +32,7 @@ export function TaskKindToggle({ value, onChange }: { value: TaskKind; onChange:
               ]}
             >
               <Icon name={o.icon} size={18} color={on ? colors.accent : colors.muted} />
-              <T v="body" style={{ fontFamily: 'Quicksand_700Bold', color: on ? colors.accent : colors.muted }}>{o.label}</T>
+              <T v="body" style={{ fontFamily: fonts.bold, color: on ? colors.accent : colors.muted }}>{o.label}</T>
             </Pressable>
           );
         })}

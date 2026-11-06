@@ -4,7 +4,7 @@ import { taskFormSchema, usernameSchema } from '../validation';
 import { task } from './helpers';
 
 it('greeting by hour', () => {
-  expect([10, 11, 14, 15, 18, 19].map(greeting)).toEqual(['Good morning', 'Good afternoon', 'Good afternoon', 'Good evening', 'Good evening', 'Good night']);
+  expect([10, 11, 14, 15, 18, 19].map(greeting)).toEqual(['Selamat pagi', 'Selamat siang', 'Selamat siang', 'Selamat sore', 'Selamat sore', 'Selamat malam']);
 });
 
 it('daySummary', () => {

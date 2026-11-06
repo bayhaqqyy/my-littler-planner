@@ -62,8 +62,8 @@ export function isValidDate(s?: string): s is string {
 }
 
 export function greeting(hour: number): string {
-  if (hour < 11) return 'Good morning';
-  if (hour < 15) return 'Good afternoon';
-  if (hour < 19) return 'Good evening';
-  return 'Good night';
+  if (hour < 11) return 'Selamat pagi';
+  if (hour < 15) return 'Selamat siang';
+  if (hour < 19) return 'Selamat sore';
+  return 'Selamat malam';
 }

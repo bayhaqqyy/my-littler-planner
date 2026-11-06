@@ -23,7 +23,7 @@ export default function RewardsScreen() {
   const gifts = Object.values(giftBoxes).sort((a, b) => ORDER[a.rarity] - ORDER[b.rarity] || a.createdAt.localeCompare(b.createdAt));
 
   return (
-    <Page title="Rewards" subtitle="Kado, lemari, level, dan streak-mu ✨" actions={<HeaderActions />}>
+    <Page title="Lemari & Kado" subtitle="Semua item didapat dari kado 🎁" actions={<HeaderActions />}>
       <Card title="Kado belum dibuka" right={<T v="muted">{gifts.length} kado</T>}>
         {!FEATURES.gifts && <View style={{ marginBottom: 10 }}><GiftsDisabledNote /></View>}
         {gifts.length === 0 ? (

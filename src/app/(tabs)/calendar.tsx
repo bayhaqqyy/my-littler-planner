@@ -11,6 +11,7 @@ import '@/store/devtools';
 import { colors, urgencyColors } from '@/theme/theme';
 import { CountdownBadge } from '@/components/deadline/CountdownBadge';
 import { useCountdownNow } from '@/components/deadline/useCountdown';
+import { ViewSwitch } from '@/components/task/ViewSwitch';
 import { HeaderActions, Page } from '@/components/AppShell';
 import { Button, Card, IconButton, Row, Segmented, T } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/Icon';
@@ -127,7 +128,7 @@ export default function CalendarScreen() {
   );
 
   return (
-    <Page title="Calendar" subtitle="Lihat semua jadwal dan deadline-mu" actions={<HeaderActions addDate={selected} />}>
+    <Page title="Tugas" subtitle="Jadwal dan deadline sebulan" switcher={<ViewSwitch value="calendar" />} actions={<HeaderActions addDate={selected} />}>
       {isDesktop ? (
         <View style={{ flexDirection: 'row', gap: 14, alignItems: 'flex-start' }}>
           <View style={{ flex: 1.7, minWidth: 0 }}>{calendar}</View>

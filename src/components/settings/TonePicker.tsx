@@ -3,7 +3,7 @@ import { Pressable, View } from 'react-native';
 import type { SoundEvent, SoundId } from '@/domain';
 import { useStore } from '@/store/store';
 import { playSound, SOUND_BY_ID, SOUND_EVENTS, SOUNDS, soundFor, unlockAudio } from '@/services/audio';
-import { colors, radius } from '@/theme/theme';
+import { colors, radius, fonts } from '@/theme/theme';
 import { css, Row, Switch, T } from '@/components/ui/primitives';
 import { Sheet } from '@/components/ui/Overlays';
 import { Icon } from '@/components/ui/Icon';
@@ -44,7 +44,7 @@ export function TonePicker({ events, toggles }: { events?: SoundEvent[]; toggles
           <Row key={e.event} gap={6} style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.row, paddingLeft: 12, paddingRight: 4, minHeight: 60, backgroundColor: on ? '#fff' : '#F7F4F8' }}>
             <Pressable accessibilityRole="button" accessibilityLabel={`Ganti suara ${e.label}`} onPress={() => setEditing(e.event)} disabled={!on}
               style={[{ flex: 1, minWidth: 0, paddingVertical: 8 }, css({ cursor: on ? 'pointer' : 'default' })]}>
-              <T v="body" style={{ fontFamily: 'Quicksand_700Bold', color: on ? colors.text : colors.muted }}>{e.label}</T>
+              <T v="body" style={{ fontFamily: fonts.bold, color: on ? colors.text : colors.muted }}>{e.label}</T>
               <T v="muted" numberOfLines={1}>{on ? `🔊 ${SOUND_BY_ID[id]?.label ?? id}` : 'Mati'}</T>
             </Pressable>
             {on && <PlayButton id={id} label={e.label} />}

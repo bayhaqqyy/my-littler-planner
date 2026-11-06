@@ -186,7 +186,7 @@ export default function ProgressScreen() {
   );
 
   return (
-    <Page title="Progress" subtitle="Lihat seberapa jauh kamu sudah melangkah ✨" actions={<HeaderActions />}>
+    <Page title="Progres" subtitle="Lihat seberapa jauh kamu sudah melangkah ✨" actions={<HeaderActions />}>
       {stats}
       <StatDetailSheet kind={detail} onClose={() => setDetail(undefined)} logs={logs} today={today} />
       {isDesktop ? (

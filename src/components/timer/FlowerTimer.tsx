@@ -16,8 +16,10 @@ const fmt = (sec: number) => {
 export const formatClock = fmt;
 
 /** Flower-shaped timer: petals around a gradient progress ring, big time, round play/pause in the middle. */
-export function FlowerTimer({ remaining, total, rest, running, onToggle, size = 300, caption }: {
+export function FlowerTimer({ remaining, total, rest, running, onToggle, size = 300, caption, hideButton }: {
   remaining: number; total: number; rest: boolean; running: boolean; onToggle: () => void; size?: number; caption?: string;
+  /** The page shows its own big play/pause below the flower. */
+  hideButton?: boolean;
 }) {
   const petal = rest ? data.timer.restPetal : data.timer.petal;
   const r = 70, c = 2 * Math.PI * r;
@@ -32,7 +34,7 @@ export function FlowerTimer({ remaining, total, rest, running, onToggle, size = 
           </LinearGradient>
         </Defs>
         {Array.from({ length: 12 }, (_, i) => (
-          <Ellipse key={i} cx={100} cy={22} rx={20} ry={26} fill={petal} stroke="#fff" strokeWidth={2} transform={`rotate(${i * 30} 100 100)`} />
+          <Ellipse key={i} cx={100} cy={22} rx={20} ry={26} fill={petal} stroke={rest ? '#fff' : '#E8B530'} strokeWidth={2} transform={`rotate(${i * 30} 100 100)`} />
         ))}
         <Circle cx={100} cy={100} r={80} fill="#fff" />
         <Circle cx={100} cy={100} r={r} stroke={rest ? '#E3F4EA' : '#FBE1EC'} strokeWidth={10} fill="none" />
@@ -43,9 +45,9 @@ export function FlowerTimer({ remaining, total, rest, running, onToggle, size = 
         <T v="greeting" accessibilityRole="timer" accessibilityLabel={`Sisa waktu ${fmt(remaining)}`}
           style={{ fontSize: timeSize, fontVariant: ['tabular-nums'], color: rest ? '#2E6B4A' : colors.text }}>{fmt(remaining)}</T>
         {caption ? <T v="muted">{caption}</T> : null}
-        <Pressable
+        {!hideButton && <Pressable
           accessibilityRole="button"
-          accessibilityLabel={running ? 'Pause' : 'Start'}
+          accessibilityLabel={running ? 'Jeda' : 'Mulai'}
           onPress={onToggle}
           style={({ pressed }) => [
             { width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center', transform: [{ scale: pressed ? 0.94 : 1 }] },
@@ -53,7 +55,7 @@ export function FlowerTimer({ remaining, total, rest, running, onToggle, size = 
           ]}
         >
           <Icon name={running ? 'pause' : 'play'} size={26} color="#fff" />
-        </Pressable>
+        </Pressable>}
       </View>
     </View>
   );

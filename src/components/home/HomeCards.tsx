@@ -12,44 +12,73 @@ import {
 } from '@/domain';
 import { useStore } from '@/store/store';
 import { useCharacterName, useLayout, useNow } from '@/store/hooks';
-import { categoryColors, colors, data, fonts, linear, radius, urgencyColors } from '@/theme/theme';
+import { categoryColors, colors, data, fonts, linear, radius, shadow, urgencyColors } from '@/theme/theme';
 import { Button, Card, css, Row, T } from '@/components/ui/primitives';
 import { ProgressBar } from '@/components/ui/Charts';
 import { Icon } from '@/components/ui/Icon';
 import { BearArt, BunnyArt, ChickArt, Flame, GiftBoxArt, KittyArt, MiniAzza, TulipArt, DaisyArt } from '@/components/illustrations';
+import { GardenCloud, Hill, Sprout, StemFlower, Sunflower } from '@/components/deco/Garden';
 import { timeLabel } from '@/components/task/TaskRow';
 
-export function GreetingCard() {
-  const now = useNow(1000);
+/** Home hero: Mini on a hill next to a flower bed that blooms one flower per finished task. */
+export function GreetingCard({ done = 0, total = 0, streak = 0 }: { done?: number; total?: number; streak?: number }) {
+  const now = useNow(30_000);
   const { username } = useCharacterName();
   const { isDesktop, isMobile } = useLayout();
   const equipped = useStore((s) => s.wardrobe.equipped);
   const h = now.getHours();
   const sub = h < 11 ? 'Semoga harimu manis dan penuh semangat 🌸' : h < 15 ? 'Jangan lupa minum dan istirahat sebentar ya 🍓' : h < 19 ? 'Sedikit lagi, kamu hebat hari ini ✨' : 'Saatnya santai dan menulis catatan harian 🌙';
-  const clock = `${String(h).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-  const sec = String(now.getSeconds()).padStart(2, '0');
+  const slots = Math.max(5, Math.min(8, total));
+  const bloom = Math.min(done, slots);
+  const left = Math.max(0, total - done);
+  const bubble = total === 0 ? 'Tanam tugas pertamamu yuk!' : left === 0 ? 'Semua bunga mekar! 🎉' : `${left} lagi biar penuh!`;
+  const colorsBed = ['#FF9EC2', '#B79CFF', '#FFCE3A', '#FFB38A', '#8EC9FF', '#FF9EC2', '#B79CFF', '#FFCE3A'];
+  const bedW = isMobile ? 210 : 300;
+  const heroH = isMobile ? 300 : 280;
   return (
-    <View style={[
-      { borderRadius: radius.greeting, borderWidth: 1, borderColor: colors.line, padding: isMobile ? 18 : 22, overflow: 'hidden', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', gap: 12 },
-      css({ backgroundImage: linear(['#FFE6EF', '#F6EDFF', '#E8F4FF'], 120), boxShadow: '0 2px 10px rgba(200,140,170,.08)' }),
-    ]}>
-      <View style={{ flex: 1, gap: 4, minWidth: 0 }}>
-        <T v="greeting" accessibilityRole="header" style={{ fontSize: isMobile ? 21 : 25 }}>{greeting(h)}, {username}!</T>
+    <View accessibilityLabel={`${greeting(h)}, ${username}. ${done} dari ${total} tugas selesai hari ini. Streak ${streak} hari.`}
+      style={[
+        { borderRadius: radius.greeting, borderWidth: 2, borderColor: '#fff', overflow: 'hidden', minHeight: heroH },
+        css({ backgroundImage: linear(['#BFE4FF', '#E4F4FF', '#F4FBEA'], 180), ...shadow.card }),
+      ]}>
+      <View aria-hidden style={{ position: 'absolute', top: 18, right: isMobile ? 100 : '30%' }}><Svg width={90} height={45} viewBox="0 0 80 40"><GardenCloud /></Svg></View>
+      <View aria-hidden style={{ position: 'absolute', top: isMobile ? 120 : 70, left: isMobile ? -20 : '45%' }}><Svg width={70} height={35} viewBox="0 0 80 40"><GardenCloud /></Svg></View>
+      <View aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}><Hill width="100%" height={isMobile ? 150 : 140} flowers={false} /></View>
+
+      <View style={{ padding: isMobile ? 18 : 24, paddingRight: isMobile ? 96 : 24, gap: 2, maxWidth: isDesktop ? 460 : undefined }}>
+        <T v="greeting" accessibilityRole="header" style={{ fontSize: isMobile ? 23 : 28, lineHeight: isMobile ? 30 : 36 }}>{greeting(h)}, {username}!</T>
         <T v="muted" style={{ fontSize: 13.5 }}>{sub}</T>
-        <T v="small" style={{ marginTop: 6 }}>{format(now, 'EEEE, d MMMM yyyy', { locale: localeId })}</T>
-        <View accessibilityLabel={`Jam ${clock}`} style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
-          <T style={{ fontFamily: fonts.bold, fontSize: isDesktop ? 46 : 34, color: colors.accent, fontVariant: ['tabular-nums'], letterSpacing: 1 }}>{clock}</T>
-          <T style={{ fontFamily: fonts.bold, fontSize: isDesktop ? 20 : 16, color: '#D98BAE', fontVariant: ['tabular-nums'] }}>{sec}</T>
-        </View>
+        <T v="small" style={{ marginTop: 2, color: colors.text }}>{format(now, 'EEEE, d MMMM yyyy', { locale: localeId })}</T>
       </View>
-      <View aria-hidden style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center' }}>
-        <Svg width={26} height={39} viewBox="0 0 40 60"><TulipArt color="#FF9EC2" /></Svg>
-        <Svg width={52} height={54} viewBox="0 0 60 62"><BunnyArt /></Svg>
-        <Svg width={22} height={33} viewBox="0 0 40 60"><TulipArt color="#FFE27A" /></Svg>
-        <MiniAzza size={isMobile ? 104 : 120} pose="happy" equipped={equipped} showPet={false} />
-        <Svg width={22} height={33} viewBox="0 0 40 60"><TulipArt color="#C3B0EE" /></Svg>
-        <Svg width={42} height={42} viewBox="0 0 60 60"><ChickArt /></Svg>
-        <Svg width={26} height={39} viewBox="0 0 40 60"><TulipArt color="#9CD3F5" /></Svg>
+
+      <Pressable accessibilityRole="link" accessibilityLabel={`Streak ${streak} hari, lihat progres`} onPress={() => router.navigate('/progress')}
+        style={[{ position: 'absolute', top: isMobile ? 14 : 18, right: isMobile ? 14 : 22, alignItems: 'center' }, css({ cursor: 'pointer' })]}>
+        <View>
+          <Svg width={isMobile ? 70 : 80} height={isMobile ? 70 : 80} viewBox="0 0 64 64"><Sunflower value={String(streak)} /></Svg>
+          <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
+            <T style={{ fontFamily: fonts.display, fontSize: isMobile ? 20 : 23, color: '#fff', lineHeight: isMobile ? 24 : 28 }}>{streak}</T>
+          </View>
+        </View>
+        <T v="chip" style={{ color: colors.text, fontFamily: fonts.bold }}>hari beruntun</T>
+      </Pressable>
+
+      <View style={{ position: 'absolute', left: isMobile ? 8 : 28, bottom: isMobile ? 8 : 10 }}>
+        <MiniAzza size={isMobile ? 128 : 150} pose={left === 0 && total > 0 ? 'dance' : 'happy'} equipped={equipped} showPet={false} />
+      </View>
+
+      <View style={{ position: 'absolute', right: isMobile ? 12 : 28, bottom: isMobile ? 20 : 22, width: bedW, alignItems: 'center' }}>
+        <View style={[{ backgroundColor: '#fff', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6, marginBottom: 6, borderWidth: 2, borderColor: colors.line }, css(shadow.card)]}>
+          <T v="small" style={{ color: colors.text, fontFamily: fonts.bold }}>{total ? `${done} dari ${total} selesai.` : 'Kebunmu masih kosong.'}</T>
+          <T v="chip" style={{ color: colors.muted }}>{bubble}</T>
+        </View>
+        <View aria-hidden style={{ flexDirection: 'row', justifyContent: 'space-around', width: bedW - 20, marginBottom: -12, zIndex: 1 }}>
+          {Array.from({ length: slots }, (_, i) => (
+            <Svg key={i} width={isMobile ? 22 : 28} height={isMobile ? 52 : 64} viewBox="0 0 24 60">
+              {i < bloom ? <StemFlower color={colorsBed[i]} height={34 + (i % 2) * 8} /> : <Sprout />}
+            </Svg>
+          ))}
+        </View>
+        <View aria-hidden style={{ width: bedW, height: 26, borderRadius: 13, backgroundColor: '#C99A6E', borderWidth: 2, borderColor: '#6B4E3D' }} />
       </View>
     </View>
   );
@@ -59,7 +88,7 @@ export function StatCard({ label, value, stops, children, valueColor }: { label:
   return (
     <View accessibilityLabel={`${label}: ${value}`} style={[
       { flexGrow: 1, flexBasis: 140, minWidth: 130, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: 14, gap: 4 },
-      css({ backgroundImage: linear(stops, 160), boxShadow: '0 2px 10px rgba(200,140,170,.08)' }),
+      css({ backgroundImage: linear(stops, 160), ...shadow.card }),
     ]}>
       <T v="muted">{label}</T>
       <Row gap={6} style={{ justifyContent: 'space-between' }}>
@@ -107,7 +136,7 @@ export function TimerPanel() {
             <T v="muted">Pilih tugas lalu tekan Mulai timer, atau langsung pakai Pomodoro.</T>
           </View>
         </Row>
-        <Button small kind="soft" label="Buka Focus Timer" style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={() => router.navigate('/timer')} />
+        <Button small kind="soft" label="Buka Fokus" style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={() => router.navigate('/timer')} />
       </Card>
     );
   }
@@ -168,13 +197,14 @@ export function UpcomingPanel({ tasks, occs, today }: { tasks: Task[]; occs: Rec
 
 export function QuotePanel({ today }: { today: string }) {
   const q = quoteOfDay(today);
+  const { character } = useCharacterName();
   return (
     <Card title="Kutipan hari ini">
       <Row gap={12} style={{ alignItems: 'flex-start' }}>
         <Svg width={54} height={50} viewBox="0 0 60 54" aria-hidden><BearArt /></Svg>
         <View style={{ flex: 1, gap: 4 }}>
           <T v="body" style={{ fontFamily: fonts.semibold, fontStyle: 'italic' }}>“{q.text}”</T>
-          <T v="muted">— {q.author}</T>
+          <T v="muted">— {q.author === 'Mini Azza' ? character : q.author}</T>
         </View>
       </Row>
     </Card>
@@ -280,7 +310,7 @@ export function GiftCard({ streak }: { streak: number }) {
           {!gifts.length && <T v="muted">{FEATURES.gifts ? 'Selesaikan tugas untuk dapat kado 🎁' : 'Untuk sementara tugas yang selesai tidak memberi kado.'}</T>}
         </View>
       </Row>
-      <Button small disabled={!FEATURES.gifts} label={gifts.length ? 'Buka kado' : 'Lihat Rewards'} style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={() => router.navigate('/rewards')} />
+      <Button small disabled={!FEATURES.gifts} label={gifts.length ? 'Buka kado' : 'Lihat lemari'} style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={() => router.navigate('/rewards')} />
     </Card>
   );
 }

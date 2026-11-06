@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import {
   CATEGORY_EMOJI, dueAtOf, dueLabel, isDeadline, occurrencesOn, remainingSec, splitOccKey, wallToDate, type PomodoroConfig,
@@ -20,7 +20,7 @@ import { completeWithFx } from '@/components/task/useComplete';
 import { CountdownBadge } from '@/components/deadline/CountdownBadge';
 import { timeLabel } from '@/components/task/TaskRow';
 import { unlockAudio } from '@/services/audio';
-import { colors } from '@/theme/theme';
+import { colors, fonts, shadow } from '@/theme/theme';
 
 const PHASE_LABEL = { focus: 'Fokus', 'short-break': 'Istirahat pendek', 'long-break': 'Istirahat panjang' } as const;
 
@@ -107,7 +107,7 @@ export default function TimerScreen() {
           )}
           <T v="muted">{timer.mode === 'pomodoro' ? `Pomodoro · ${PHASE_LABEL[timer.phase]}` : 'Sesuai durasi tugas'}{timer.state === 'paused' ? ' · dijeda' : ''}</T>
           <View style={{ flexDirection: isDesktop ? 'row' : 'column', alignItems: 'center', gap: 16 }}>
-            <FlowerTimer remaining={rem} total={timer.totalSec} rest={restLook} running={running} onToggle={toggle} size={isDesktop ? 320 : 280}
+            <FlowerTimer hideButton remaining={rem} total={timer.totalSec} rest={restLook} running={running} onToggle={toggle} size={isDesktop ? 320 : 280}
               caption={timer.state === 'finished' ? 'Waktu habis!' : running ? (isBreak ? 'Santai dulu ☕' : 'Fokus ya ✨') : 'Siap?'} />
             <View style={{ alignItems: 'center' }}>
               <MiniAzza size={isDesktop ? 120 : 96} pose={pose} equipped={equipped} />
@@ -122,11 +122,13 @@ export default function TimerScreen() {
             </View>
           )}
           {finishedPrompt && dismissed && <Button label="Waktu habis — pilih langkah berikutnya" onPress={() => setDismissed(false)} />}
-          <Row wrap style={{ justifyContent: 'center' }}>
-            <Button small label={running ? 'Pause' : timer.state === 'paused' ? 'Resume' : 'Start'} icon={<Icon name={running ? 'pause' : 'play'} size={16} color="#fff" />} onPress={toggle} disabled={timer.state === 'finished'} />
-            <Button small kind="outline" label="Reset" icon={<Icon name="reset" size={16} color={colors.accent} />} onPress={() => st().timerReset()} />
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', gap: isDesktop ? 34 : 26, width: '100%' }}>
+            <RoundControl label="Ulang" icon="reset" onPress={() => st().timerReset()} />
+            <RoundControl big label={running ? 'Jeda' : timer.state === 'paused' ? 'Lanjut' : 'Mulai'} icon={running ? 'pause' : 'play'} onPress={toggle} disabled={timer.state === 'finished'} />
+            <RoundControl label="Selesai" icon="check" onPress={done} />
+          </View>
+          <Row gap={8} wrap style={{ justifyContent: 'center' }}>
             <Button small kind="outline" label="+5 menit" onPress={() => st().timerAdd(5)} />
-            <Button small kind="soft" label="Tandai selesai" icon={<Icon name="check" size={16} color={colors.accent} />} onPress={done} />
             <Button small kind="danger" label="Batalkan timer" onPress={() => setConfirmCancel(true)} />
           </Row>
         </Card>
@@ -164,7 +166,7 @@ export default function TimerScreen() {
   );
 
   return (
-    <Page title="Focus Timer" subtitle="Satu tugas, satu fokus 🌷" actions={<HeaderActions />}>
+    <Page title="Fokus" subtitle="Satu tugas, satu fokus 🌷" actions={<HeaderActions />}>
       <View style={{ flexDirection: isDesktop ? 'row' : 'column', gap: 14, alignItems: isDesktop ? 'flex-start' : 'stretch' }}>
         {main}
         {side}
@@ -228,7 +230,7 @@ function NoTimer() {
           {list.map((v) => (
             <Row key={v.key} style={{ justifyContent: 'space-between', borderWidth: 1, borderColor: colors.line, borderRadius: 14, padding: 10, backgroundColor: '#fff' }}>
               <View style={{ flex: 1, gap: 2 }}>
-                <T v="body" style={{ fontFamily: 'Quicksand_700Bold' }}>{CATEGORY_EMOJI[v.task.category]} {v.task.title}</T>
+                <T v="body" style={{ fontFamily: fonts.bold }}>{CATEGORY_EMOJI[v.task.category]} {v.task.title}</T>
                 <T v="muted">{timeLabel(v)}</T>
               </View>
               <Button small label="Mulai" icon={<Icon name="play" size={14} color="#fff" />} onPress={() => { unlockAudio(); start(v.key, mode); }} />
@@ -237,5 +239,24 @@ function NoTimer() {
         </View>
       )}
     </Card>
+  );
+}
+
+/** Round timer control with its label underneath; the big one is the main play/pause. */
+function RoundControl({ label, icon, onPress, big, disabled }: { label: string; icon: 'play' | 'pause' | 'reset' | 'check'; onPress: () => void; big?: boolean; disabled?: boolean }) {
+  const sz = big ? 76 : 56;
+  return (
+    <View style={{ alignItems: 'center', gap: 6, width: big ? 92 : 72 }}>
+      <View style={{ height: 80, justifyContent: 'center' }}>
+      <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} disabled={disabled}
+        style={({ pressed }) => [
+          { width: sz, height: sz, borderRadius: sz / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff', borderWidth: big ? 0 : 2, borderColor: colors.line, opacity: disabled ? 0.5 : 1, transform: [{ scale: pressed ? 0.94 : 1 }] },
+          css(big ? { backgroundImage: `linear-gradient(160deg, ${colors.accentGradient.join(', ')})`, ...shadow.button, cursor: 'pointer' } : { ...shadow.card, cursor: 'pointer' }),
+        ]}>
+        <Icon name={icon} size={big ? 32 : 24} color={big ? '#fff' : colors.text} fill={big && icon === 'pause' ? 'none' : undefined} />
+      </Pressable>
+      </View>
+      <T v="small" style={{ fontFamily: fonts.bold, color: big ? colors.accent : colors.text }}>{label}</T>
+    </View>
   );
 }

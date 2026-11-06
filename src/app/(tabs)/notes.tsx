@@ -194,7 +194,7 @@ export default function NotesScreen() {
   );
 
   return (
-    <Page title="Notes" subtitle="Catatan harian, mood, dan refleksi" actions={<HeaderActions />}>
+    <Page title="Catatan" subtitle="Catatan harian, mood, dan refleksi" actions={<HeaderActions />}>
       {isDesktop ? (
         <View style={{ flexDirection: 'row', gap: 14, alignItems: 'flex-start' }}>
           <View style={{ flex: 1.6, minWidth: 0 }}>{paper}</View>

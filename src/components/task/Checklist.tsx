@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type ComponentRef } from 
 import { Pressable, View, type TextInput } from 'react-native';
 import { presetConfig, type PomodoroPreset } from '@/domain';
 import { useStore } from '@/store/store';
-import { checklist, linear } from '@/theme/theme';
+import { checklist, linear, fonts } from '@/theme/theme';
 import { css, Field, Row, T } from '@/components/ui/primitives';
 import { Sheep, Tulip } from '@/components/illustrations';
 
@@ -23,7 +23,7 @@ export function ChecklistHeader({ name, done, total }: { name: string; done: num
   return (
     <View style={[{ borderRadius: 26, padding: 18, gap: 10, overflow: 'hidden' }, css({ backgroundImage: linear(checklist.header, 160) })]}>
       <T v="title" accessibilityRole="header" style={{ color: checklist.accent, fontSize: 32 }}>Check List</T>
-      <T v="body" style={{ color: checklist.ink, fontFamily: 'Quicksand_700Bold' }}>{summary}</T>
+      <T v="body" style={{ color: checklist.ink, fontFamily: fonts.bold }}>{summary}</T>
       <View accessibilityRole="progressbar" accessibilityLabel={`Progres hari ini ${pct} persen`}
         aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}
         style={{ height: 10, borderRadius: 999, backgroundColor: checklist.track, overflow: 'hidden' }}>
@@ -40,7 +40,7 @@ export function ChecklistHeader({ name, done, total }: { name: string; done: num
                 onPress={() => updateSettings({ pomodoro: presetConfig(p.key, undefined, pomodoro.autoStartNext) })}
                 style={[{ minHeight: 36, minWidth: 52, paddingHorizontal: 10, borderRadius: 999, alignItems: 'center', justifyContent: 'center',
                   backgroundColor: on ? checklist.accent : 'transparent' }, css({ cursor: 'pointer' })]}>
-                <T v="small" style={{ color: on ? '#fff' : checklist.inkSoft, fontFamily: 'Quicksand_700Bold' }}>{p.label}</T>
+                <T v="small" style={{ color: on ? '#fff' : checklist.inkSoft, fontFamily: fonts.bold }}>{p.label}</T>
               </Pressable>
             );
           })}

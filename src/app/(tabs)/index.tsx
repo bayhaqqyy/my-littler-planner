@@ -12,7 +12,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { TaskRow } from '@/components/task/TaskRow';
 import { InstallBanner } from '@/components/InstallCard';
 import { DeadlineHeroCard } from '@/components/deadline/DeadlineHeroCard';
-import { GiftCard, GreetingCard, QuotePanel, StatCards, TimerPanel, UpcomingPanel, WeekWidget } from '@/components/home/HomeCards';
+import { GiftCard, GreetingCard, QuotePanel, TimerPanel, UpcomingPanel, WeekWidget } from '@/components/home/HomeCards';
 
 export default function Home() {
   const today = useToday();
@@ -65,10 +65,9 @@ export default function Home() {
   );
 
   return (
-    <Page title="My Little Planner" actions={<HeaderActions addDate={today} />}>
+    <Page title="Kebunmu hari ini" actions={<HeaderActions />}>
       <InstallBanner />
-      <GreetingCard />
-      <StatCards total={summary.total} done={summary.done} pending={summary.pending} streak={streak} pct={summary.pct} />
+      <GreetingCard done={summary.done} total={summary.total} streak={streak} />
       {isDesktop ? (
         <Row gap={14} style={{ alignItems: 'flex-start' }}>
           <View style={{ flex: 1.3, gap: 14, minWidth: 0 }}>{deadlineCard}{todayCard}</View>

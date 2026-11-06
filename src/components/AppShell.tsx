@@ -2,119 +2,152 @@ import { FEATURES } from '@/config/features';
 import { useEffect, useRef, type ReactNode } from 'react';
 import { Animated, Pressable, ScrollView, View } from 'react-native';
 import { router, usePathname } from 'expo-router';
-import Svg from 'react-native-svg';
+import Svg, { G } from 'react-native-svg';
 import { remainingSec, splitOccKey } from '@/domain';
 import { useStore } from '@/store/store';
 import { useCharacterName, useLayout, useNow, useReduceMotion } from '@/store/hooks';
 import { colors, fonts, linear, radius, shadow } from '@/theme/theme';
 import { css, IconButton, Row, T } from './ui/primitives';
 import { Icon, type IconName } from './ui/Icon';
-import { BunnyArt, MiniAzza, TulipArt } from './illustrations';
+import { BunnyArt, MiniAzza } from './illustrations';
+import { StemFlower } from './deco/Garden';
 import { DecoLayer } from './deco/DecoLayer';
 
 export const NAV: { href: string; label: string; short: string; icon: IconName }[] = [
-  { href: '/', label: 'Home', short: 'Home', icon: 'home' },
-  { href: '/tasks', label: 'To-Do List', short: 'To-Do', icon: 'list' },
-  { href: '/calendar', label: 'Calendar', short: 'Calendar', icon: 'calendar' },
-  { href: '/timer', label: 'Focus Timer', short: 'Timer', icon: 'timer' },
-  { href: '/progress', label: 'Progress', short: 'Progress', icon: 'chart' },
-  { href: '/notes', label: 'Notes', short: 'Notes', icon: 'note' },
-  { href: '/rewards', label: 'Rewards', short: 'Rewards', icon: 'gift' },
+  { href: '/', label: 'Kebun', short: 'Kebun', icon: 'garden' },
+  { href: '/tasks', label: 'Tugas', short: 'Tugas', icon: 'tasks' },
+  { href: '/calendar', label: 'Kalender', short: 'Kalender', icon: 'calendar' },
+  { href: '/timer', label: 'Fokus', short: 'Fokus', icon: 'timer' },
+  { href: '/progress', label: 'Progres', short: 'Progres', icon: 'chart' },
+  { href: '/notes', label: 'Catatan', short: 'Catatan', icon: 'note' },
+  { href: '/rewards', label: 'Lemari & Kado', short: 'Lemari', icon: 'hanger' },
+];
+
+/** Bottom tabs on phones and tablets: four sections around a big "Tambah" button. */
+const TABS: { href: string; label: string; icon: IconName; match: string[] }[] = [
+  { href: '/', label: 'Kebun', icon: 'garden', match: ['/'] },
+  { href: '/tasks', label: 'Tugas', icon: 'tasks', match: ['/tasks', '/calendar', '/task'] },
+  { href: '/timer', label: 'Fokus', icon: 'timer', match: ['/timer'] },
+  { href: '/me', label: 'Aku', icon: 'user', match: ['/me', '/progress', '/notes', '/rewards', '/settings'] },
 ];
 
 const isActive = (path: string, href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const tabActive = (path: string, match: string[]) => match.some((m) => isActive(path, m));
+
+function useGiftCount() {
+  return useStore((s) => (FEATURES.gifts ? Object.keys(s.giftBoxes).length : 0));
+}
+
+function CountBadge({ n, style }: { n: number; style?: object }) {
+  if (n <= 0) return null;
+  return (
+    <View style={[{ backgroundColor: '#E84D5B', borderRadius: 10, minWidth: 20, height: 20, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 5, borderWidth: 2, borderColor: '#fff' }, style]}>
+      <T v="chip" style={{ color: '#fff', fontSize: 10.5, lineHeight: 13 }}>{n > 9 ? '9+' : n}</T>
+    </View>
+  );
+}
 
 function Sidebar() {
   const path = usePathname();
   const equipped = useStore((s) => s.wardrobe.equipped);
-  const gifts = useStore((s) => (FEATURES.gifts ? Object.keys(s.giftBoxes).length : 0));
+  const gifts = useGiftCount();
   const { character } = useCharacterName();
   return (
-    <View style={[{ width: 236, paddingVertical: 20, paddingHorizontal: 14, borderRightWidth: 1, borderColor: colors.line, gap: 4 }, css({ backgroundImage: linear(colors.sidebar, 180), position: 'sticky', top: 0, height: '100vh' })]}>
-      <Row gap={10} style={{ paddingHorizontal: 8, marginBottom: 16 }}>
-        <MiniAzza faceOnly size={44} equipped={equipped} />
-        <View>
-          <T v="cardTitle" style={{ color: colors.accent }}>My Little</T>
-          <T v="cardTitle" style={{ marginTop: -2 }}>Planner</T>
+    <View style={[{ width: 248, paddingVertical: 20, paddingHorizontal: 14, gap: 4, zIndex: 2 }, css({ position: 'sticky', top: 0, height: '100vh' })]}>
+      <View style={[{ flex: 1, backgroundColor: 'rgba(255,255,255,.9)', borderRadius: 28, borderWidth: 2, borderColor: colors.line, paddingVertical: 16, paddingHorizontal: 12, gap: 4 }, css({ ...shadow.card, backdropFilter: 'blur(8px)' })]}>
+        <Pressable accessibilityRole="link" accessibilityLabel={`Profil ${character}`} onPress={() => router.navigate('/me')}
+          style={(st) => [{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: 8, borderRadius: 20, marginBottom: 6, backgroundColor: isActive(path, '/me') ? colors.accentSoft : (st as { hovered?: boolean }).hovered ? '#F4FBEE' : 'transparent' }, css({ cursor: 'pointer' })]}>
+          <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: '#FFF1F6', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <MiniAzza faceOnly size={44} equipped={equipped} />
+          </View>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <T v="cardTitle" style={{ color: colors.accent, lineHeight: 20 }}>My Little</T>
+            <T v="cardTitle" style={{ lineHeight: 20 }}>Planner</T>
+          </View>
+        </Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="Tambah tugas" onPress={() => router.push('/task/new')}
+          style={({ pressed }) => [{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 48, borderRadius: radius.pill, marginBottom: 10, transform: [{ scale: pressed ? 0.97 : 1 }] }, css({ backgroundImage: linear(colors.accentGradient, 135), ...shadow.button, cursor: 'pointer' })]}>
+          <Icon name="plus" size={22} color="#fff" />
+          <T v="body" style={{ color: '#fff', fontFamily: fonts.bold, fontSize: 15.5 }}>Tambah tugas</T>
+        </Pressable>
+        <View accessibilityRole="navigation" style={{ gap: 2 }}>
+          {NAV.map((n) => {
+            const on = isActive(path, n.href);
+            return (
+              <Pressable
+                key={n.href}
+                accessibilityRole="link"
+                accessibilityState={{ selected: on }}
+                accessibilityLabel={n.label}
+                onPress={() => router.navigate(n.href as never)}
+                style={(st) => [
+                  { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 44, paddingHorizontal: 12, borderRadius: radius.pill, backgroundColor: on ? colors.accentSoft : (st as { hovered?: boolean }).hovered ? '#F4FBEE' : 'transparent' },
+                  css({ cursor: 'pointer', transitionDuration: '150ms' }),
+                ]}
+              >
+                <Icon name={n.icon} size={21} color={on ? colors.accent : colors.muted} />
+                <T v="body" style={{ fontFamily: on ? fonts.bold : fonts.semibold, color: on ? colors.accent : colors.text, flex: 1 }}>{n.label}</T>
+                {n.href === '/rewards' && <CountBadge n={gifts} />}
+              </Pressable>
+            );
+          })}
         </View>
-      </Row>
-      <View accessibilityRole="navigation" style={{ gap: 4 }}>
-        {NAV.map((n) => {
-          const on = isActive(path, n.href);
-          return (
-            <Pressable
-              key={n.href}
-              accessibilityRole="link"
-              accessibilityState={{ selected: on }}
-              accessibilityLabel={n.label}
-              onPress={() => router.navigate(n.href as never)}
-              style={(st) => [
-                { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 44, paddingHorizontal: 12, borderRadius: radius.pill, backgroundColor: on ? colors.accentSoft : (st as { hovered?: boolean }).hovered ? 'rgba(255,230,238,.5)' : 'transparent' },
-                css({ cursor: 'pointer', transitionDuration: '150ms' }),
-              ]}
-            >
-              <Icon name={n.icon} size={20} color={on ? colors.accent : colors.muted} />
-              <T v="body" style={{ fontFamily: on ? fonts.bold : fonts.semibold, color: on ? colors.accent : colors.text, flex: 1 }}>{n.label}</T>
-              {n.href === '/rewards' && gifts > 0 && (
-                <View style={{ backgroundColor: colors.accent, borderRadius: 10, minWidth: 20, height: 20, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 5 }}>
-                  <T v="chip" style={{ color: '#fff' }}>{gifts}</T>
-                </View>
-              )}
-            </Pressable>
-          );
-        })}
+        <View style={{ flex: 1 }} />
+        <View style={{ alignItems: 'center', marginBottom: 6 }} aria-hidden>
+          <Svg width={150} height={54} viewBox="0 0 150 54">
+            <G transform="translate(4 -4)"><StemFlower color="#FF9EC2" height={34} /></G>
+            <G transform="translate(30 0)"><StemFlower color="#FFCE3A" height={42} /></G>
+            <G transform="translate(52 6) scale(0.8)"><BunnyArt /></G>
+            <G transform="translate(98 -2)"><StemFlower color="#B79CFF" height={36} /></G>
+            <G transform="translate(122 2)"><StemFlower color="#8EC9FF" height={30} /></G>
+          </Svg>
+          <T v="muted" style={{ textAlign: 'center' }}>{character} menemanimu 🌷</T>
+        </View>
+        <Pressable accessibilityRole="link" accessibilityLabel="Pengaturan" onPress={() => router.navigate('/settings')}
+          style={(st) => [{ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 44, paddingHorizontal: 12, borderRadius: radius.pill, backgroundColor: isActive(path, '/settings') ? colors.accentSoft : (st as { hovered?: boolean }).hovered ? '#F4FBEE' : 'transparent' }, css({ cursor: 'pointer' })]}>
+          <Icon name="settings" size={20} color={colors.muted} />
+          <T v="body">Pengaturan</T>
+        </Pressable>
       </View>
-      <View style={{ flex: 1 }} />
-      <View style={{ alignItems: 'center', marginBottom: 6 }} aria-hidden>
-        <Row gap={0} style={{ alignItems: 'flex-end' }}>
-          <Svg width={28} height={42} viewBox="0 0 40 60"><TulipArt color="#FF9EC2" /></Svg>
-          <Svg width={64} height={66} viewBox="0 0 60 62"><BunnyArt /></Svg>
-          <Svg width={26} height={39} viewBox="0 0 40 60"><TulipArt color="#C3B0EE" /></Svg>
-        </Row>
-        <T v="muted" style={{ textAlign: 'center' }}>{character} menemanimu 💕</T>
-      </View>
-      <Pressable accessibilityRole="link" accessibilityLabel="Settings" onPress={() => router.navigate('/settings')}
-        style={[{ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 44, paddingHorizontal: 12, borderRadius: radius.pill, backgroundColor: isActive(path, '/settings') ? colors.accentSoft : 'transparent' }, css({ cursor: 'pointer' })]}>
-        <Icon name="settings" size={20} color={colors.muted} />
-        <T v="body">Settings</T>
-      </Pressable>
     </View>
   );
 }
 
 function TabBar() {
   const path = usePathname();
+  const gifts = useGiftCount();
+  const { width } = useLayout();
+  const barW = Math.min(width - 20, 560);
+  const slots = [TABS[0], TABS[1], null, TABS[2], TABS[3]];
   return (
-    <View accessibilityRole="navigation" style={[
-      { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.96)', borderTopWidth: 1, borderColor: colors.line, zIndex: 20 },
-      css({ position: 'fixed', paddingBottom: 'env(safe-area-inset-bottom)', backdropFilter: 'blur(10px)', boxShadow: '0 -4px 16px rgba(200,140,170,.08)' }),
-    ]}>
-      {NAV.map((n) => {
-        const on = isActive(path, n.href);
-        return (
-          <Pressable key={n.href} accessibilityRole="link" accessibilityLabel={n.label} accessibilityState={{ selected: on }}
-            onPress={() => router.navigate(n.href as never)}
-            style={[{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 6, minHeight: 54, gap: 2 }, css({ cursor: 'pointer' })]}>
-            <View style={{ backgroundColor: on ? colors.accentSoft : 'transparent', borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 3 }}>
-              <Icon name={n.icon} size={20} color={on ? colors.accent : colors.muted} />
-            </View>
-            <T v="chip" style={{ fontSize: 10, color: on ? colors.accent : colors.muted }} numberOfLines={1}>{n.short}</T>
-          </Pressable>
-        );
-      })}
+    <View pointerEvents="box-none" style={[{ position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', zIndex: 20 }, css({ position: 'fixed', paddingBottom: 'max(10px, env(safe-area-inset-bottom))' })]}>
+      <View accessibilityRole="navigation" style={[{ width: barW, height: 70, flexDirection: 'row', backgroundColor: 'rgba(255,255,255,.97)', borderRadius: 35, borderWidth: 2, borderColor: colors.line, alignItems: 'stretch' }, css({ ...shadow.float, backdropFilter: 'blur(10px)' })]}>
+        {slots.map((t, i) => {
+          if (!t) return <View key="gap" style={{ flex: 1 }} />;
+          const on = tabActive(path, t.match);
+          return (
+            <Pressable key={t.href} accessibilityRole="link" accessibilityLabel={t.label} accessibilityState={{ selected: on }}
+              onPress={() => router.navigate(t.href as never)}
+              style={[{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 2 }, css({ cursor: 'pointer' })]}>
+              <View style={{ backgroundColor: on ? colors.accentSoft : 'transparent', borderRadius: radius.pill, paddingHorizontal: 14, paddingVertical: 4 }}>
+                <Icon name={t.icon} size={22} color={on ? colors.accent : '#8EA083'} />
+              </View>
+              <T v="chip" style={{ fontSize: 11, color: on ? colors.accent : '#7E9172', fontFamily: on ? fonts.bold : fonts.semibold }} numberOfLines={1}>{t.label}</T>
+              {t.href === '/me' && <CountBadge n={gifts} style={{ position: 'absolute', top: 4, left: '54%' }} />}
+            </Pressable>
+          );
+        })}
+        <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, top: -30, alignItems: 'center' }}>
+          <View style={[{ width: 78, height: 78, borderRadius: 39, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }, css(shadow.float)]}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Tambah tugas" onPress={() => router.push('/task/new')}
+              style={({ pressed }) => [{ width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center', transform: [{ scale: pressed ? 0.94 : 1 }] }, css({ backgroundImage: linear(colors.accentGradient, 160), ...shadow.button, cursor: 'pointer' })]}>
+              <Icon name="plus" size={32} color="#fff" />
+            </Pressable>
+          </View>
+          <T v="chip" style={{ marginTop: 2, color: colors.accent, fontFamily: fonts.bold, fontSize: 11 }}>Tambah</T>
+        </View>
+      </View>
     </View>
-  );
-}
-
-function Fab() {
-  return (
-    <Pressable accessibilityRole="button" accessibilityLabel="Tambah tugas" onPress={() => router.push('/task/new')}
-      style={({ pressed }) => [
-        { position: 'absolute', right: 18, bottom: 78, width: 58, height: 58, borderRadius: 29, alignItems: 'center', justifyContent: 'center', zIndex: 21, transform: [{ scale: pressed ? 0.94 : 1 }] },
-        css({ position: 'fixed', marginBottom: 'env(safe-area-inset-bottom)', backgroundImage: linear(colors.accentGradient), ...shadow.button, cursor: 'pointer' }),
-      ]}>
-      <Icon name="plus" size={28} color="#fff" />
-    </Pressable>
   );
 }
 
@@ -156,45 +189,47 @@ export function AppShell({ children }: { children: ReactNode }) {
     Animated.timing(a, { toValue: 1, duration: 300, useNativeDriver: false }).start();
   }, [path, reduce, a]);
   return (
-    <View style={[{ flex: 1, flexDirection: 'row', backgroundColor: colors.bg }, css({ minHeight: '100vh', backgroundImage: linear(colors.bgGradient, 135), backgroundAttachment: 'fixed' })]}>
+    <View style={[{ flex: 1, flexDirection: 'row', backgroundColor: colors.bg }, css({ minHeight: '100vh', backgroundImage: linear(colors.bgGradient, 180), backgroundAttachment: 'fixed' })]}>
       <DecoLayer />
       {isDesktop && <Sidebar />}
       <Animated.View style={{ flex: 1, minWidth: 0, opacity: a, transform: [{ translateY: a.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }) }] }}>
         {children}
       </Animated.View>
-      {!isDesktop && <TabBar />}
-      {isMobile && !path.startsWith('/task') && <Fab />}
-      <MiniTimer bottom={isDesktop ? 20 : 78} />
+      {!isDesktop && !path.startsWith('/task/') && <TabBar />}
+      <MiniTimer bottom={isDesktop ? 20 : 112} />
     </View>
   );
 }
 
 /** Page wrapper: scrollable, centered, with title and header actions. */
-export function Page({ title, subtitle, children, actions, back }: { title: string; subtitle?: string; children: ReactNode; actions?: ReactNode; back?: boolean }) {
+/** `switcher`: a view toggle shown beside the title on wide screens and on its own row on phones. */
+export function Page({ title, subtitle, children, actions, back, switcher }: { title: string; subtitle?: string; children: ReactNode; actions?: ReactNode; back?: boolean; switcher?: ReactNode }) {
   const { isDesktop, isMobile } = useLayout();
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={[{ padding: isMobile ? 16 : 24, paddingBottom: isDesktop ? 40 : 150, gap: 14, width: '100%', maxWidth: 1240, alignSelf: 'center' }, css({ paddingTop: isMobile ? 'max(16px, env(safe-area-inset-top))' : 24 })]}>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={[{ padding: isMobile ? 16 : 24, paddingBottom: isDesktop ? 60 : 170, gap: 14, width: '100%', maxWidth: 1240, alignSelf: 'center' }, css({ paddingTop: isMobile ? 'max(16px, env(safe-area-inset-top))' : 24 })]}>
       <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
         <Row gap={10} style={{ flex: 1, minWidth: 0 }}>
           {back && <IconButton label="Kembali" onPress={() => (router.canGoBack() ? router.back() : router.navigate('/'))}><Icon name="chevron-left" /></IconButton>}
           <View style={{ flex: 1, minWidth: 0 }}>
-            <T v="title" accessibilityRole="header" style={{ fontSize: isMobile ? 22 : 27 }}>{title}</T>
+            <T v="title" accessibilityRole="header" style={{ fontSize: isMobile ? 26 : 30, lineHeight: isMobile ? 34 : 38 }}>{title}</T>
             {subtitle ? <T v="muted">{subtitle}</T> : null}
           </View>
         </Row>
-        {actions ? <Row gap={8} style={{ flexShrink: 0 }}>{actions}</Row> : null}
+        {actions || (switcher && !isMobile) ? <Row gap={8} style={{ flexShrink: 0 }}>{!isMobile && switcher}{actions}</Row> : null}
       </Row>
+      {isMobile && switcher ? <View style={{ marginTop: -4 }}>{switcher}</View> : null}
       {children}
     </ScrollView>
   );
 }
 
-/** Default header actions: Add + Settings. */
+/** Default header actions: Settings, plus "Tambah" when a page can prefill a date (calendar). */
 export function HeaderActions({ addDate }: { addDate?: string }) {
+  const { isMobile } = useLayout();
   return (
     <>
-      <IconButton label="Tambah tugas" bg={colors.accentSoft} onPress={() => router.push({ pathname: '/task/new', params: addDate ? { date: addDate } : {} })}><Icon name="plus" color={colors.accent} /></IconButton>
-      <IconButton label="Settings" onPress={() => router.push('/settings')}><Icon name="settings" /></IconButton>
+      {addDate && !isMobile ? <IconButton label="Tambah tugas di tanggal ini" bg={colors.accentSoft} onPress={() => router.push({ pathname: '/task/new', params: { date: addDate } })}><Icon name="plus" color={colors.accent} /></IconButton> : null}
+      <IconButton label="Pengaturan" onPress={() => router.push('/settings')}><Icon name="settings" /></IconButton>
     </>
   );
 }

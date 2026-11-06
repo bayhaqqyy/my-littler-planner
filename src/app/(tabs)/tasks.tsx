@@ -9,7 +9,8 @@ import {
 } from '@/domain';
 import { useStore } from '@/store/store';
 import { useCharacterName, useNow, useTaskList, useToday } from '@/store/hooks';
-import { categoryColors, checklist, colors, radius, urgencyColors } from '@/theme/theme';
+import { categoryColors, checklist, colors, radius, urgencyColors, fonts } from '@/theme/theme';
+import { ViewSwitch } from '@/components/task/ViewSwitch';
 import { HeaderActions, Page } from '@/components/AppShell';
 import { Button, Card, Chip, css, Field, Row, Segmented, T, CategoryPill } from '@/components/ui/primitives';
 import type { IconName } from '@/components/ui/Icon';
@@ -127,7 +128,7 @@ export default function Tasks() {
           </Row>
           {groups.length ? groups.map(({ g, items: list }) => (
             <View key={g} style={{ gap: 8 }}>
-              <T v="small" accessibilityRole="header" style={{ marginTop: 6, paddingHorizontal: 4, color: checklist.ink, fontFamily: 'Quicksand_700Bold' }}>
+              <T v="small" accessibilityRole="header" style={{ marginTop: 6, paddingHorizontal: 4, color: checklist.ink, fontFamily: fonts.bold }}>
                 {DEADLINE_GROUP_LABEL[g]}
               </T>
               {list.map((v) => <TaskRow key={v.key} v={v} timer />)}
@@ -165,7 +166,7 @@ export default function Tasks() {
               <T style={{ fontSize: 20 }}>{CATEGORY_EMOJI[t.category]}</T>
             </View>
             <View style={{ flex: 1, gap: 3 }}>
-              <T v="body" style={{ fontFamily: 'Quicksand_700Bold' }} numberOfLines={1}>{t.title}</T>
+              <T v="body" style={{ fontFamily: fonts.bold }} numberOfLines={1}>{t.title}</T>
               <Row wrap gap={6}>
                 <Icon name="repeat" size={13} />
                 <T v="muted">{repeatText(t)}{t.start ? ` · ${t.start}${t.end ? `–${t.end}` : ''}` : ''}</T>
@@ -183,7 +184,7 @@ export default function Tasks() {
   }
 
   return (
-    <Page title="To-Do List" subtitle={fmtDate(today)} actions={<HeaderActions />}>
+    <Page title="Tugas" subtitle={fmtDate(today)} switcher={<ViewSwitch value="list" />} actions={<HeaderActions />}>
       <ChecklistHeader name={username} done={todayDone} total={data.todayList.length} />
       <Segmented label="Daftar tugas" value={tab} onChange={setTab} variant="chips"
         items={TABS.map((t) => ({ key: t.key, label: t.label, icon: t.icon, count: counts[t.key] }))} />

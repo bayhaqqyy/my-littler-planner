@@ -7,7 +7,7 @@ import { CATEGORY_EMOJI, completionText, dueAtOf, dueLabel, durationOf, endOf, f
 import { CountdownBadge } from '@/components/deadline/CountdownBadge';
 import { useCountdownNow } from '@/components/deadline/useCountdown';
 import { useStore } from '@/store/store';
-import { categoryColors, checklist, colors, radius } from '@/theme/theme';
+import { categoryColors, checklist, colors, radius, fonts } from '@/theme/theme';
 import { CategoryPill, css, PriorityPill, Row, T } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/Icon';
 import { FlowerCheck } from './FlowerCheck';
@@ -98,7 +98,7 @@ function DeadlineRow({ v, trailing }: { v: OccView; trailing?: ReactNode }) {
           <T
             v="body"
             numberOfLines={2}
-            style={[{ fontFamily: 'Quicksand_700Bold' }, v.done ? css({ textDecorationLine: 'line-through', textDecorationColor: '#F7A8C4', textDecorationThickness: '2px', color: colors.muted }) : null]}
+            style={[{ fontFamily: fonts.bold }, v.done ? css({ textDecorationLine: 'line-through', textDecorationColor: '#F7A8C4', textDecorationThickness: '2px', color: colors.muted }) : null]}
           >
             {v.task.title}
           </T>
@@ -160,7 +160,7 @@ function ScheduledRow({ v, showDate, conflict, trailing }: { v: OccView; showDat
         <T
           v="body"
           numberOfLines={2}
-          style={[{ fontFamily: 'Quicksand_700Bold' }, v.done ? css({ textDecorationLine: 'line-through', textDecorationColor: '#F7A8C4', textDecorationThickness: '2px', color: colors.muted }) : null]}
+          style={[{ fontFamily: fonts.bold }, v.done ? css({ textDecorationLine: 'line-through', textDecorationColor: '#F7A8C4', textDecorationThickness: '2px', color: colors.muted }) : null]}
         >
           {CATEGORY_EMOJI[v.task.category]} {v.task.title}
         </T>

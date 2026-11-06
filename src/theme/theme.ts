@@ -1,20 +1,29 @@
 import type { Category, Priority, Rarity } from '@/domain/types';
 
 export const colors = {
-  bg: '#FFF7F9',
-  bgGradient: ['#FFF1F6', '#F8F0FF', '#EEF6FF'],
-  surface: 'rgba(255,255,255,0.92)',
-  surfaceSoft: '#FFF8FA',
-  line: '#F3E1E8',
-  text: '#4A3B52',
-  muted: '#76627C',
-  accent: '#C2457A',
-  accentGradient: ['#D9578A', '#C2457A'],
-  accentSoft: '#FFE6EE',
-  sidebar: ['#FFF0F5', '#FFF7F2'],
+  bg: '#E9F6FF',
+  /** Sky to meadow: the "Kebun" season background. */
+  bgGradient: ['#CBEAFF', '#E6F5FF', '#F2FAEB'],
+  surface: 'rgba(255,255,255,0.95)',
+  surfaceSoft: '#F6FBF1',
+  line: '#DDEBD2',
+  text: '#33482A',
+  muted: '#5D7051',
+  accent: '#C93A73',
+  accentGradient: ['#FF8DB6', '#DE5389'],
+  accentSoft: '#FFE6EF',
+  sidebar: ['#F4FBEE', '#E7F5FF'],
   danger: '#B8325E',
   white: '#FFFFFF',
   pastel: ['#FFDDE5', '#FFF5F0', '#D6C5F4', '#C5E6FA', '#C8E6D3', '#FFE5AE', '#EBD1B8', '#F8DBEC', '#B9E3FC'],
+  /** Garden scenery (backgrounds, hills, flowers). */
+  grass: '#A4DC7E',
+  grassLight: '#BFE8A0',
+  grassDark: '#6FBF4F',
+  leaf: '#5BBF63',
+  sun: '#FFCE3A',
+  seed: '#8A5A3C',
+  ink: '#6B4E3D',
 };
 
 /** Peach "Check List" look of the To-Do page (paper checklist with an inline timer). */
@@ -77,19 +86,22 @@ export const data = {
   bars: ['#F7A8C4', '#C3B0EE', '#9CD3F5', '#A8DABD', '#F7CF82', '#F5B8A0', '#B5DD9A'],
   donutTrack: '#FBE1EC',
   donutFill: ['#FF7FAF', '#B48CF2', '#5FB4EE'],
-  timer: { petal: '#FFD9E6', ring: ['#F48FB1', '#FFB38A', '#B9A0F0'], restPetal: '#D9F2E4', restRing: '#7CCFA4' },
+  timer: { petal: '#FFD966', ring: ['#FF8DB6', '#FFB38A', '#FFCE3A'], restPetal: '#D9F2E4', restRing: '#7CCFA4' },
 };
 
 export const fonts = {
-  medium: 'Quicksand_500Medium',
-  semibold: 'Quicksand_600SemiBold',
-  bold: 'Quicksand_700Bold',
+  medium: 'Nunito_600SemiBold',
+  semibold: 'Nunito_700Bold',
+  bold: 'Nunito_800ExtraBold',
+  /** Rounded display face for titles and big numbers. */
+  display: 'Baloo2_800ExtraBold',
+  displaySoft: 'Baloo2_700Bold',
 };
 
 export const type = {
-  pageTitle: { fontFamily: fonts.bold, fontSize: 24 },
-  greeting: { fontFamily: fonts.bold, fontSize: 22 },
-  cardTitle: { fontFamily: fonts.bold, fontSize: 15.5 },
+  pageTitle: { fontFamily: fonts.display, fontSize: 26, lineHeight: 34 },
+  greeting: { fontFamily: fonts.display, fontSize: 24, lineHeight: 32 },
+  cardTitle: { fontFamily: fonts.display, fontSize: 17, lineHeight: 24 },
   body: { fontFamily: fonts.medium, fontSize: 14.5 },
   small: { fontFamily: fonts.semibold, fontSize: 12.5 },
   chip: { fontFamily: fonts.semibold, fontSize: 11.5 },
@@ -98,12 +110,13 @@ export const type = {
 /** iOS Safari zooms into any focused field with text smaller than 16px — keep inputs at 16. */
 export const INPUT_FONT_SIZE = 16;
 
-export const radius = { card: 20, greeting: 24, row: 14, pill: 999, icon: 12 };
+export const radius = { card: 22, greeting: 28, row: 16, pill: 999, icon: 12 };
 export const space = (n: number) => n * 4;
 
 export const shadow = {
-  card: { boxShadow: '0 2px 10px rgba(200,140,170,.08)' },
-  button: { boxShadow: '0 6px 14px rgba(194,69,122,.25)' },
+  card: { boxShadow: '0 4px 16px rgba(80,130,60,.10)' },
+  button: { boxShadow: '0 6px 14px rgba(222,83,137,.30)' },
+  float: { boxShadow: '0 8px 24px rgba(80,130,60,.18)' },
 } as const;
 
 export const breakpoints = { tablet: 600, desktop: 900 };

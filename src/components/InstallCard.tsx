@@ -100,7 +100,7 @@ export function InstallBanner() {
   if (!show) return null;
   const dismiss = () => { try { localStorage.setItem(LS_DISMISS, '1'); } catch { /* ignore */ } setShow(false); };
   return (
-    <View style={[{ borderRadius: radius.card, borderWidth: 1, borderColor: '#FFC1D6', padding: 14, gap: 10 }, css({ backgroundImage: 'linear-gradient(135deg,#FFF3F7,#F6F1FF)' })]}>
+    <View style={[{ borderRadius: radius.card, borderWidth: 1, borderColor: '#CFE8BE', padding: 14, gap: 10 }, css({ backgroundImage: 'linear-gradient(135deg,#FFFFFF,#F2FAEB)' })]}>
       <Row gap={10}>
         <Bunny size={44} />
         <View style={{ flex: 1, minWidth: 0 }}>

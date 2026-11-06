@@ -2,7 +2,8 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 export type IconName =
   | 'home' | 'list' | 'calendar' | 'timer' | 'chart' | 'note' | 'gift' | 'settings' | 'plus' | 'search' | 'chevron-left'
-  | 'chevron-right' | 'close' | 'check' | 'trash' | 'edit' | 'play' | 'pause' | 'reset' | 'bell' | 'repeat' | 'clock' | 'flag' | 'skip' | 'logout' | 'move';
+  | 'chevron-right' | 'close' | 'check' | 'trash' | 'edit' | 'play' | 'pause' | 'reset' | 'bell' | 'repeat' | 'clock' | 'flag' | 'skip' | 'logout' | 'move'
+  | 'garden' | 'tasks' | 'user' | 'hanger' | 'medal';
 
 const P: Record<IconName, string> = {
   home: 'M4 11 L12 4 L20 11 V20 H14 V14 H10 V20 H4Z',
@@ -30,6 +31,11 @@ const P: Record<IconName, string> = {
   flag: 'M5 21 V4 M5 4 H17 L14 8 L17 12 H5',
   skip: 'M6 5 L15 12 L6 19Z M18 5 V19',
   logout: 'M15 4 H19 V20 H15 M10 8 L6 12 L10 16 M6 12 H16',
+  garden: 'M3 12 L12 5 L21 12 V21 H3Z M12 21 V16 M12 17 C9 17 8 14 8 13 C11 13 12 15 12 17 M12 16 C12 14 13 12 16 12 C16 14 14 16 12 16',
+  tasks: 'M6 5 H18 V21 H6Z M9 3 H15 V7 H9Z M8.5 12 L10.5 14 L13.5 10.5 M8.5 17.5 H15.5',
+  user: 'M12 12 A4.5 4.5 0 1 0 12 3 A4.5 4.5 0 0 0 12 12Z M4 21 C4 16.5 7.5 14.5 12 14.5 C16.5 14.5 20 16.5 20 21',
+  hanger: 'M12 7 A2.4 2.4 0 1 1 14.4 4.6 Q12 5.2 12 7.5 L3 13.5 Q2 15 4 15 H20 Q22 15 21 13.5 L12 7.5',
+  medal: 'M12 21 A6 6 0 1 0 12 9 A6 6 0 0 0 12 21Z M8 3 L10.5 9.5 M16 3 L13.5 9.5 M12 12.5 L13 14.5 L15 14.8 L13.5 16.2 L13.9 18.2 L12 17.2 L10.1 18.2 L10.5 16.2 L9 14.8 L11 14.5Z',
   move: 'M12 3 V21 M3 12 H21 M12 3 L9 6 M12 3 L15 6 M12 21 L9 18 M12 21 L15 18',
 };
 

@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import { countdown, urgencyOf, URGENCY_LABEL } from '@/domain';
-import { urgencyColors } from '@/theme/theme';
+import { urgencyColors, fonts } from '@/theme/theme';
 import { T } from '@/components/ui/primitives';
 
 /** Two-line countdown label ("Sisa" / "2 jam 15 mnt") colored by urgency. Hidden when done. */
@@ -19,7 +19,7 @@ export function CountdownBadge({ dueMs, nowMs, done, compact }: { dueMs: number;
       ) : (
         <>
           <T v="chip" style={{ color: col.text, fontSize: 12 }}>{c.top}</T>
-          <T v="small" style={{ color: col.text, fontFamily: 'Quicksand_700Bold' }}>{c.bottom}</T>
+          <T v="small" style={{ color: col.text, fontFamily: fonts.bold }}>{c.bottom}</T>
         </>
       )}
     </View>

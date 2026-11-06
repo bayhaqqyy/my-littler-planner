@@ -10,7 +10,7 @@ import { useCountdownNow } from '@/components/deadline/useCountdown';
 import { useStore } from '@/store/store';
 import { useToday } from '@/store/hooks';
 import { useUi } from '@/store/ui';
-import { categoryColors, colors, radius, urgencyColors } from '@/theme/theme';
+import { categoryColors, colors, radius, urgencyColors, fonts } from '@/theme/theme';
 import { HeaderActions, Page } from '@/components/AppShell';
 import { Button, Card, CategoryPill, css, Divider, Field, IconButton, PriorityPill, Row, T } from '@/components/ui/primitives';
 import { Icon, type IconName } from '@/components/ui/Icon';
@@ -30,7 +30,7 @@ function InfoRow({ icon, label, value, danger }: { icon: IconName; label: string
     <Row gap={10} style={{ minHeight: 32 }}>
       <Icon name={icon} size={18} color={danger ? colors.danger : colors.muted} />
       <T v="muted" style={{ width: 92 }}>{label}</T>
-      <T v="body" style={{ flex: 1, color: danger ? colors.danger : colors.text, fontFamily: 'Quicksand_600SemiBold' }}>{value}</T>
+      <T v="body" style={{ flex: 1, color: danger ? colors.danger : colors.text, fontFamily: fonts.semibold }}>{value}</T>
     </Row>
   );
 }
@@ -55,8 +55,8 @@ export default function TaskDetail() {
 
   if (!task || task.deletedAt) {
     return (
-      <Page title="Task Detail" back>
-        <Card><EmptyState title="Tugas tidak ditemukan" sub="Mungkin sudah dihapus."><Button label="Ke To-Do List" onPress={() => router.replace('/tasks')} /></EmptyState></Card>
+      <Page title="Detail tugas" back>
+        <Card><EmptyState title="Tugas tidak ditemukan" sub="Mungkin sudah dihapus."><Button label="Ke daftar tugas" onPress={() => router.replace('/tasks')} /></EmptyState></Card>
       </Page>
     );
   }
@@ -69,7 +69,7 @@ export default function TaskDetail() {
 
   if (editing) {
     return (
-      <Page title="Edit Task" subtitle={task.title} back>
+      <Page title="Ubah tugas" subtitle={task.title} back>
         <TaskForm
           task={task}
           initial={initialValues(task, {
@@ -93,7 +93,7 @@ export default function TaskDetail() {
   const subDone = task.subtasks.filter((s) => s.done).length;
 
   return (
-    <Page title="Task Detail" back actions={<HeaderActions />}>
+    <Page title="Detail tugas" back actions={<HeaderActions />}>
       <View style={{ gap: 14, width: '100%', maxWidth: 820 }}>
         <Card style={[{ gap: 12, borderLeftWidth: 6, borderLeftColor: c.dot }]}>
           <Row gap={6} style={{ alignItems: 'flex-start' }}>
@@ -165,7 +165,7 @@ export default function TaskDetail() {
                 {reminders.map((r) => (
                   <Row key={r.id} gap={10}>
                     <Icon name="bell" size={16} color={colors.accent} />
-                    <T v="body" style={{ fontVariant: ['tabular-nums'], fontFamily: 'Quicksand_700Bold' }}>{r.time}</T>
+                    <T v="body" style={{ fontVariant: ['tabular-nums'], fontFamily: fonts.bold }}>{r.time}</T>
                     <T v="muted">
                       {dl ? REMINDER_OFFSET_LABEL[Number(r.id.split('|dl')[1])] ?? REMINDER_LABEL[r.kind] : REMINDER_LABEL[r.kind]}
                       {r.date !== (dl && dueAt ? wallDate(dueAt) : date) ? ` (${fmtDate(r.date, 'EEE, d MMM')})` : ''}

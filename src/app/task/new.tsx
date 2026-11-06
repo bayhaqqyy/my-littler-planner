@@ -21,7 +21,7 @@ export default function NewTask() {
     deadlineReminders: settings.defaultDeadlineRemindersMin,
   });
   return (
-    <Page title="New Task" subtitle="Catat tugas dan atur pengingatnya" back>
+    <Page title="Tugas baru" subtitle="Catat tugas dan atur pengingatnya" back>
       <TaskForm
         initial={initial}
         onCancel={() => goBack()}
