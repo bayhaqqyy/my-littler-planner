@@ -1,5 +1,5 @@
 /* My Little Planner service worker: offline app shell + Web Push reminders. */
-const CACHE_VERSION = 'v7';
+const CACHE_VERSION = 'v8';
 const SHELL_CACHE = `mlp-shell-${CACHE_VERSION}`;
 const ASSET_CACHE = `mlp-assets-${CACHE_VERSION}`;
 const CONFIG_CACHE = 'mlp-config';
@@ -35,6 +35,11 @@ self.addEventListener('fetch', (event) => {
   // Only same-origin requests are cached (Supabase and other APIs go straight to the network).
   if (url.origin !== self.location.origin) return;
   if (url.pathname === '/sw.js') return;
+  // The manifest decides the install name/icon: always fetch it fresh, cache only for offline.
+  if (url.pathname === '/manifest.json') {
+    event.respondWith(fetch(req).catch(async () => (await caches.match(req, { ignoreSearch: true })) ?? Response.error()));
+    return;
+  }
 
   if (req.mode === 'navigate') {
     // Network first, fall back to the cached shell when offline.
