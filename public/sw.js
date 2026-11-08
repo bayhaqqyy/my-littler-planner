@@ -1,10 +1,10 @@
 /* My Little Planner service worker: offline app shell + Web Push reminders. */
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v7';
 const SHELL_CACHE = `mlp-shell-${CACHE_VERSION}`;
 const ASSET_CACHE = `mlp-assets-${CACHE_VERSION}`;
 const CONFIG_CACHE = 'mlp-config';
 const SOUNDS = ['remind-before', 'start-study', 'break', 'back-to-study', 'done'].map((n) => `/sounds/${n}.mp3`);
-const SHELL = ['/', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon.svg', '/icons/badge-96.png', ...SOUNDS];
+const SHELL = ['/', '/manifest.json', '/icons/icon-192.png?v=kebun', '/icons/icon-512.png?v=kebun', '/icons/icon.svg?v=kebun', '/icons/badge-96.png', ...SOUNDS];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

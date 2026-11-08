@@ -33,7 +33,7 @@ export function LoadingScreen({ message }: { message?: string }) {
       style={[{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 14, padding: 24 }, css({ minHeight: '100vh', backgroundImage: linear(colors.bgGradient) })]}
     >
       <View style={[{ borderRadius: 28 }, css({ boxShadow: '0 6px 14px rgba(194,69,122,.18)' }), reduce ? null : bob]}>
-        <Image source={{ uri: '/icons/icon.svg' }} style={{ width: 120, height: 120, borderRadius: 28 }} accessibilityIgnoresInvertColors />
+        <Image source={{ uri: '/icons/icon.svg?v=kebun' }} style={{ width: 120, height: 120, borderRadius: 28 }} accessibilityIgnoresInvertColors />
       </View>
       <Text style={[{ color: colors.accent, fontSize: 16, fontWeight: '700' }, css({ fontFamily: 'system-ui, -apple-system, sans-serif' })]}>My Little Planner</Text>
       <View style={{ flexDirection: 'row', gap: 6, height: 10, alignItems: 'center' }} aria-hidden>
