@@ -150,7 +150,7 @@ export default function ProgressScreen() {
   const levelCard = (
     <Card>
       <Row gap={12}>
-        <Friend kind="tupai" size={56} />
+        <Friend kind="hamster" size={56} />
         <View style={{ flex: 1, gap: 2 }}>
           <T v="muted">Level {level.level}</T>
           <T v="cardTitle" style={{ fontSize: 18, color: colors.accent }}>{level.title}</T>

@@ -150,7 +150,7 @@ export default function NotesScreen() {
     <Card title="Catatan sebelumnya" right={
       <Row gap={0}>
         <Friend kind="kodok" size={34} />
-        <Friend kind="landak" size={34} />
+        <Friend kind="hamster" size={34} />
         <Friend kind="lebah" size={32} />
       </Row>
     }>

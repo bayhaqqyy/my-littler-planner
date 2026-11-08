@@ -146,7 +146,7 @@ export function TimerPanel() {
     return (
       <Card title="Timer saat ini">
         <Row gap={12}>
-          <Friend kind="landak" size={52} />
+          <Friend kind="hamster" size={52} />
           <View style={{ flex: 1, gap: 2 }}>
             <T v="body">Belum ada timer berjalan</T>
             <T v="muted">Pilih tugas lalu tekan Mulai timer, atau langsung pakai Pomodoro.</T>

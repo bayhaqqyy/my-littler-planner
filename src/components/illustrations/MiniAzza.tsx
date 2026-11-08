@@ -2,6 +2,7 @@ import Svg, { Circle, Ellipse, G, Path } from 'react-native-svg';
 import { ITEM_BY_ID, type ItemLook, type Wardrobe } from '@/domain';
 import { Extra, Glasses, HairItem, Outfit, OutfitBack } from '../avatar/wear';
 import { PetArt } from '../avatar/pets';
+import { HamsterArt } from '../avatar/friends';
 import { Heart, LN } from '../avatar/shapes';
 import { ButterflyShape } from './Critters';
 
@@ -134,7 +135,7 @@ export function MiniAzza({ size = 120, pose = 'happy', equipped = {}, showPet = 
       <Props pose={pose} />
       <Head pose={pose} equipped={equipped} />
       <Extra look={lookOf(equipped.extra)} layer="front" />
-      {pet && <PetArt look={pet} x={84} y={96} s={0.62} />}
+      {pet && (pet.k === 'hamster' ? <HamsterArt x={84} y={98} s={0.6} /> : <PetArt look={pet} x={84} y={96} s={0.62} />)}
     </Svg>
   );
 }

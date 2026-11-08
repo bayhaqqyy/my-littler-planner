@@ -67,7 +67,7 @@ function Header({ sub }: { sub: string }) {
     <View style={{ alignItems: 'center', gap: 4 }}>
       <Row gap={0} style={{ alignItems: 'flex-end' }}>
         <Flower size={26} color="#FF9EC2" />
-        <Friend kind="landak" size={46} />
+        <Friend kind="hamster" size={46} />
         <MiniAzza size={90} pose="happy" showPet={false} />
         <Friend kind="kodok" size={40} />
         <Flower size={22} color="#FFCE3A" />

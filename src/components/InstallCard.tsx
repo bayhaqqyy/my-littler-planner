@@ -103,7 +103,7 @@ export function InstallBanner() {
   return (
     <View style={[{ borderRadius: radius.card, borderWidth: 1, borderColor: '#CFE8BE', padding: 14, gap: 10 }, css({ backgroundImage: 'linear-gradient(135deg,#FFFFFF,#F2FAEB)' })]}>
       <Row gap={10}>
-        <Friend kind="landak" size={46} />
+        <Friend kind="hamster" size={46} />
         <View style={{ flex: 1, minWidth: 0 }}>
           <T v="cardTitle">Pasang Little Planner di HP-mu</T>
           <T v="muted">Biar bisa dibuka dari layar utama dan dapat pengingat.</T>

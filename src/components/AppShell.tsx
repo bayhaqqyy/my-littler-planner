@@ -98,7 +98,7 @@ function Sidebar() {
           <Svg width={150} height={54} viewBox="0 0 150 54">
             <G transform="translate(4 -4)"><StemFlower color="#FF9EC2" height={34} /></G>
             <G transform="translate(30 0)"><StemFlower color="#FFCE3A" height={42} /></G>
-            <FriendArt kind="landak" x={50} y={6} s={0.8} />
+            <FriendArt kind="hamster" x={50} y={6} s={0.8} />
             <G transform="translate(98 -2)"><StemFlower color="#B79CFF" height={36} /></G>
             <G transform="translate(122 2)"><StemFlower color="#8EC9FF" height={30} /></G>
           </Svg>
