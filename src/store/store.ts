@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import {
-  addTime as tAddTime, afterBreak, afterFocus, currentStreak, durationOf, equip as wEquip, focusDelta, ITEM_BY_ID,
+  addTime as tAddTime, afterBreak, afterFocus, currentStreak, durationOf, equip as wEquip, toggleGarden, focusDelta, ITEM_BY_ID,
   MEMORY_FLOWER, newMilestones, newPhase, occKey, occurrencesOn, pause as tPause, phaseMinutes, pickItem, presetConfig,
   remainingSec, reschedule as dReschedule, reset as tReset, rollGift, DEFAULT_NEW_CHANCE, splitOccKey, start as tStart,
   streakItem, toDateStr, isDeadline, earlyBonus, wallToDate, dueAtOf, migrateTask, DEFAULT_DEADLINE_REMINDERS,
@@ -483,6 +483,7 @@ export const useStore = create<Store>()(
 
       equip: (slot, itemId) => set((s) => {
         if (itemId && !ITEM_BY_ID[itemId]) return {};
+        if (slot === 'garden') return itemId ? { wardrobe: toggleGarden(s.wardrobe, itemId), ...touch(s, [['wardrobe', 'me']]) } : {};
         return { wardrobe: wEquip(s.wardrobe, slot, itemId), ...touch(s, [['wardrobe', 'me']]) };
       }),
 

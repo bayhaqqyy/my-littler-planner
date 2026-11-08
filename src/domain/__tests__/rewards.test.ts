@@ -1,4 +1,4 @@
-import { equip, defaultWardrobe, newItemChance, pickItem, rollGift, rollRarity, streakItem } from '../rewards';
+import { toggleGarden, equip, defaultWardrobe, newItemChance, pickItem, rollGift, rollRarity, streakItem } from '../rewards';
 import { ITEMS } from '../items';
 import { task } from './helpers';
 
@@ -63,7 +63,8 @@ describe('what is inside a box', () => {
   });
   it('item counts per rarity', () => {
     const count = (r: string) => ITEMS.filter((i) => i.rarity === r).length;
-    expect([count('biasa'), count('langka'), count('super'), count('legenda')]).toEqual([18, 17, 11, 8]);
+    expect([count('biasa'), count('langka'), count('super'), count('legenda')]).toEqual([84, 62, 36, 8]);
+    expect(ITEMS.length).toBe(196);
     expect(new Set(ITEMS.map((i) => i.id)).size).toBe(ITEMS.length);
   });
   it('streak items', () => expect(streakItem(7)).toBe('outfit-gaun-sakura'));
@@ -73,4 +74,17 @@ it('outfit slot can never be empty', () => {
   const w = defaultWardrobe();
   expect(equip(w, 'outfit', undefined).equipped.outfit).toBe('outfit-kaos-pink');
   expect(equip(w, 'hair', undefined).equipped.hair).toBeUndefined();
+});
+
+it('garden holds owned decorations, at most six, and toggles off', () => {
+  let w = { ...defaultWardrobe(), owned: [...defaultWardrobe().owned, 'garden-bangku', 'garden-pagar', 'garden-kolam', 'garden-lampu', 'garden-ayunan', 'garden-kincir', 'garden-gazebo'] };
+  expect(toggleGarden(w, 'garden-tenda').garden ?? []).toEqual([]);
+  for (const id of w.owned.filter((i) => i.startsWith('garden-'))) w = toggleGarden(w, id);
+  expect(w.garden).toHaveLength(6);
+  expect(w.garden?.[0]).toBe('garden-pagar');
+  expect(toggleGarden(w, 'garden-gazebo').garden).not.toContain('garden-gazebo');
+});
+
+it('every item has a look', () => {
+  for (const it of ITEMS) expect(it.look.k.length).toBeGreaterThan(0);
 });

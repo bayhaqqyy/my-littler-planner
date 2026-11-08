@@ -58,29 +58,37 @@ export default function Home() {
   );
   const extra = (
     <>
-      <WeekWidget tasks={tasks} occs={occs} today={today} />
       <GiftCard streak={streak} />
       <QuotePanel today={today} />
+      <WeekWidget tasks={tasks} occs={occs} today={today} />
     </>
   );
 
   return (
     <Page title="Kebunmu hari ini" actions={<HeaderActions />}>
       <InstallBanner />
-      <GreetingCard done={summary.done} total={summary.total} streak={streak} />
       {isDesktop ? (
-        <Row gap={14} style={{ alignItems: 'flex-start' }}>
-          <View style={{ flex: 1.3, gap: 14, minWidth: 0 }}>{deadlineCard}{todayCard}</View>
-          <View style={{ flex: 1, gap: 14, minWidth: 0 }}>{side}</View>
-          <View style={{ flex: 1, gap: 14, minWidth: 0 }}>{extra}</View>
-        </Row>
+        <>
+          <Row gap={16} style={{ alignItems: 'stretch' }}>
+            <View style={{ flex: 1.9, minWidth: 0 }}><GreetingCard done={summary.done} total={summary.total} streak={streak} /></View>
+            <View style={{ flex: 1, gap: 16, minWidth: 0 }}><GiftCard streak={streak} /><QuotePanel today={today} /></View>
+          </Row>
+          <Row gap={16} style={{ alignItems: 'flex-start' }}>
+            <View style={{ flex: 1.9, gap: 16, minWidth: 0 }}>{todayCard}{deadlineCard}</View>
+            <View style={{ flex: 1, gap: 16, minWidth: 0 }}>{side}<WeekWidget tasks={tasks} occs={occs} today={today} /></View>
+          </Row>
+        </>
       ) : isTablet ? (
+        <>
+        <GreetingCard done={summary.done} total={summary.total} streak={streak} />
         <Row gap={14} style={{ alignItems: 'flex-start' }}>
           <View style={{ flex: 1, gap: 14, minWidth: 0 }}>{deadlineCard}{todayCard}<WeekWidget tasks={tasks} occs={occs} today={today} /></View>
           <View style={{ flex: 1, gap: 14, minWidth: 0 }}>{side}<GiftCard streak={streak} /><QuotePanel today={today} /></View>
         </Row>
+        </>
       ) : (
         <View style={{ gap: 14 }}>
+          <GreetingCard done={summary.done} total={summary.total} streak={streak} />
           {deadlineCard}
           <TimerPanel />
           {todayCard}

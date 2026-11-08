@@ -8,8 +8,7 @@ import { format } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import {
   addDays, CATEGORY_EMOJI, deadlineOccurrences, greeting, occurrencesInRange, quoteOfDay, remainingSec, routineDots, splitOccKey, startOfWeek,
-  toMinutes, urgencyOf, wallDate, wallToDate, weekDots, type DotStatus, type Occurrence, type Task, type Urgency,
-} from '@/domain';
+  toMinutes, urgencyOf, wallDate, wallToDate, weekDots, type DotStatus, type Occurrence, type Task, type Urgency, ITEM_BY_ID } from '@/domain';
 import { useStore } from '@/store/store';
 import { useCharacterName, useLayout, useNow } from '@/store/hooks';
 import { categoryColors, colors, data, fonts, linear, radius, shadow, urgencyColors } from '@/theme/theme';
@@ -18,7 +17,10 @@ import { ProgressBar } from '@/components/ui/Charts';
 import { Icon } from '@/components/ui/Icon';
 import { BearArt, BunnyArt, ChickArt, Flame, GiftBoxArt, KittyArt, MiniAzza, TulipArt, DaisyArt } from '@/components/illustrations';
 import { GardenCloud, Hill, Sprout, StemFlower, Sunflower } from '@/components/deco/Garden';
+import { GardenArt } from '@/components/avatar/garden';
 import { timeLabel } from '@/components/task/TaskRow';
+
+const NO_GARDEN: string[] = [];
 
 /** Home hero: Mini on a hill next to a flower bed that blooms one flower per finished task. */
 export function GreetingCard({ done = 0, total = 0, streak = 0 }: { done?: number; total?: number; streak?: number }) {
@@ -26,6 +28,7 @@ export function GreetingCard({ done = 0, total = 0, streak = 0 }: { done?: numbe
   const { username } = useCharacterName();
   const { isDesktop, isMobile } = useLayout();
   const equipped = useStore((s) => s.wardrobe.equipped);
+  const placed = useStore((s) => s.wardrobe.garden) ?? NO_GARDEN;
   const h = now.getHours();
   const sub = h < 11 ? 'Semoga harimu manis dan penuh semangat 🌸' : h < 15 ? 'Jangan lupa minum dan istirahat sebentar ya 🍓' : h < 19 ? 'Sedikit lagi, kamu hebat hari ini ✨' : 'Saatnya santai dan menulis catatan harian 🌙';
   const slots = Math.max(5, Math.min(8, total));
@@ -34,7 +37,7 @@ export function GreetingCard({ done = 0, total = 0, streak = 0 }: { done?: numbe
   const bubble = total === 0 ? 'Tanam tugas pertamamu yuk!' : left === 0 ? 'Semua bunga mekar! 🎉' : `${left} lagi biar penuh!`;
   const colorsBed = ['#FF9EC2', '#B79CFF', '#FFCE3A', '#FFB38A', '#8EC9FF', '#FF9EC2', '#B79CFF', '#FFCE3A'];
   const bedW = isMobile ? 210 : 300;
-  const heroH = isMobile ? 300 : 280;
+  const heroH = placed.length ? 344 : isMobile ? 300 : 280;
   return (
     <View accessibilityLabel={`${greeting(h)}, ${username}. ${done} dari ${total} tugas selesai hari ini. Streak ${streak} hari.`}
       style={[
@@ -43,13 +46,25 @@ export function GreetingCard({ done = 0, total = 0, streak = 0 }: { done?: numbe
       ]}>
       <View aria-hidden style={{ position: 'absolute', top: 18, right: isMobile ? 100 : '30%' }}><Svg width={90} height={45} viewBox="0 0 80 40"><GardenCloud /></Svg></View>
       <View aria-hidden style={{ position: 'absolute', top: isMobile ? 120 : 70, left: isMobile ? -20 : '45%' }}><Svg width={70} height={35} viewBox="0 0 80 40"><GardenCloud /></Svg></View>
-      <View aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}><Hill width="100%" height={isMobile ? 150 : 140} flowers={false} /></View>
+      <View aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}><Hill width="100%" height={placed.length ? 216 : isMobile ? 150 : 140} flowers={false} /></View>
 
       <View style={{ padding: isMobile ? 18 : 24, paddingRight: isMobile ? 96 : 24, gap: 2, maxWidth: isDesktop ? 460 : undefined }}>
         <T v="greeting" accessibilityRole="header" style={{ fontSize: isMobile ? 23 : 28, lineHeight: isMobile ? 30 : 36 }}>{greeting(h)}, {username}!</T>
         <T v="muted" style={{ fontSize: 13.5 }}>{sub}</T>
         <T v="small" style={{ marginTop: 2, color: colors.text }}>{format(now, 'EEEE, d MMMM yyyy', { locale: localeId })}</T>
       </View>
+
+      {placed.map((id, i) => {
+        const look = ITEM_BY_ID[id]?.look;
+        if (!look) return null;
+        const left = isMobile ? [46, 61, 76, 90, 32, 18][i] : [44, 56, 68, 80, 92, 32][i];
+        const sz = isMobile ? 42 : 54;
+        return (
+          <View key={id} aria-hidden style={{ position: 'absolute', left: `${left}%`, bottom: 158 + (i % 2) * 4, marginLeft: -sz / 2 }}>
+            <Svg width={sz} height={sz} viewBox="0 0 60 60"><GardenArt look={look} /></Svg>
+          </View>
+        );
+      })}
 
       <Pressable accessibilityRole="link" accessibilityLabel={`Streak ${streak} hari, lihat progres`} onPress={() => router.navigate('/progress')}
         style={[{ position: 'absolute', top: isMobile ? 14 : 18, right: isMobile ? 14 : 22, alignItems: 'center' }, css({ cursor: 'pointer' })]}>
@@ -199,15 +214,14 @@ export function QuotePanel({ today }: { today: string }) {
   const q = quoteOfDay(today);
   const { character } = useCharacterName();
   return (
-    <Card title="Kutipan hari ini">
-      <Row gap={12} style={{ alignItems: 'flex-start' }}>
-        <Svg width={54} height={50} viewBox="0 0 60 54" aria-hidden><BearArt /></Svg>
-        <View style={{ flex: 1, gap: 4 }}>
-          <T v="body" style={{ fontFamily: fonts.semibold, fontStyle: 'italic' }}>“{q.text}”</T>
-          <T v="muted">— {q.author === 'Mini Azza' ? character : q.author}</T>
-        </View>
-      </Row>
-    </Card>
+    <View accessibilityLabel={`Kutipan hari ini: ${q.text}`} style={[{ borderRadius: radius.card, borderWidth: 2, borderColor: '#FFE7A6', backgroundColor: '#FFFBEA', padding: 16, gap: 8, overflow: 'hidden' }, css(shadow.card)]}>
+      <View aria-hidden style={{ position: 'absolute', right: -14, bottom: -14, opacity: 0.9 }}>
+        <Svg width={86} height={86} viewBox="0 0 64 64"><Sunflower /></Svg>
+      </View>
+      <T v="cardTitle" style={{ color: '#8A6A1E' }}>Kutipan hari ini</T>
+      <T v="body" style={{ fontFamily: fonts.bold, fontSize: 15.5, lineHeight: 23, color: colors.text, paddingRight: 52 }}>“{q.text}”</T>
+      <T v="muted" style={{ color: '#9A7A2E' }}>— {q.author === 'Mini Azza' ? character : q.author}</T>
+    </View>
   );
 }
 
@@ -300,17 +314,20 @@ export function GiftCard({ streak }: { streak: number }) {
   const gifts = useMemo(() => Object.values(giftBoxes), [giftBoxes]);
   const top = gifts.find((g) => g.rarity === 'streak') ?? gifts.find((g) => g.rarity === 'super') ?? gifts.find((g) => g.rarity === 'langka') ?? gifts[0];
   return (
-    <Card title="Kado kamu">
-      {!FEATURES.gifts && <View style={{ marginBottom: 10 }}><GiftsDisabledNote /></View>}
-      <Row gap={12} style={FEATURES.gifts ? undefined : disabledLook}>
-        {top ? <GiftBoxArt size={60} rarity={top.rarity} /> : <Svg width={44} height={44} viewBox="0 0 40 40" aria-hidden><DaisyArt /></Svg>}
-        <View style={{ flex: 1, gap: 2 }}>
-          <T v="body" style={{ fontFamily: fonts.bold }}>{gifts.length ? `${gifts.length} kado belum dibuka` : 'Belum ada kado baru'}</T>
-          <Row gap={4}><Flame size={18} active={streak > 0} /><T v="muted">Streak {streak} hari</T></Row>
-          {!gifts.length && <T v="muted">{FEATURES.gifts ? 'Selesaikan tugas untuk dapat kado 🎁' : 'Untuk sementara tugas yang selesai tidak memberi kado.'}</T>}
+    <View style={[{ borderRadius: radius.card, borderWidth: 2, borderColor: '#FFD3E2', padding: 16, gap: 10, overflow: 'hidden' }, css({ backgroundImage: 'linear-gradient(150deg,#FFF0F6,#F4EEFF)', ...shadow.card })]}>
+      <T v="cardTitle">Kado kamu</T>
+      {!FEATURES.gifts && <GiftsDisabledNote />}
+      <Row gap={14} style={FEATURES.gifts ? undefined : disabledLook}>
+        <View style={{ width: 76, height: 76, borderRadius: 24, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
+          {top ? <GiftBoxArt size={60} rarity={top.rarity} /> : <Svg width={48} height={48} viewBox="0 0 40 40" aria-hidden><DaisyArt /></Svg>}
+        </View>
+        <View style={{ flex: 1, gap: 3 }}>
+          <T style={{ fontFamily: fonts.display, fontSize: 22, lineHeight: 28, color: colors.accent }}>{gifts.length ? `${gifts.length} kado` : 'Belum ada'}</T>
+          <T v="small" style={{ color: colors.text }}>{gifts.length ? 'menunggu dibuka' : 'Selesaikan tugas untuk dapat kado 🎁'}</T>
+          <Row gap={4}><Flame size={16} active={streak > 0} /><T v="muted">Streak {streak} hari</T></Row>
         </View>
       </Row>
-      <Button small disabled={!FEATURES.gifts} label={gifts.length ? 'Buka kado' : 'Lihat lemari'} style={{ marginTop: 12, alignSelf: 'flex-start' }} onPress={() => router.navigate('/rewards')} />
-    </Card>
+      <Button small disabled={!FEATURES.gifts} label={gifts.length ? 'Buka kado' : 'Lihat lemari'} style={{ alignSelf: 'flex-start' }} onPress={() => router.navigate('/rewards')} />
+    </View>
   );
 }

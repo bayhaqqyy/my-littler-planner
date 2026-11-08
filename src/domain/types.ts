@@ -6,7 +6,9 @@ export type TaskKind = 'scheduled' | 'deadline';
 /** 'legenda': only from Legend-rank badges. */
 export type Rarity = 'default' | 'biasa' | 'langka' | 'super' | 'streak' | 'legenda';
 export type Mood = 'senang' | 'biasa' | 'sedih' | 'capek' | 'badmood' | 'semangat';
-export type Slot = 'hair' | 'outfit' | 'glasses' | 'pet' | 'extra';
+export type Slot = 'hair' | 'outfit' | 'glasses' | 'pet' | 'extra' | 'garden';
+/** Slots worn by Mini (the garden is decorated separately, several at once). */
+export type WearSlot = Exclude<Slot, 'garden'>;
 
 export interface Profile {
   userId: string;
@@ -106,17 +108,23 @@ export interface GiftBox {
   newChance?: number;
 }
 
+/** How an item is drawn: a kind plus up to two colors / variants. */
+export interface ItemLook { k: string; a?: string; b?: string }
+
 export interface Item {
   id: string;
   slot: Slot;
   rarity: Rarity;
   name: string;
   description: string;
+  look: ItemLook;
 }
 
 export interface Wardrobe {
   owned: string[];
   equipped: { hair?: string; outfit: string; glasses?: string; pet?: string; extra?: string };
+  /** Garden decorations placed in the Kebun (up to GARDEN_MAX). */
+  garden?: string[];
 }
 
 /** `moods` holds every mood picked that day; `mood` is the older single-mood field (kept = first pick). */

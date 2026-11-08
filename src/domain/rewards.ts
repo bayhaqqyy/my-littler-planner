@@ -1,5 +1,5 @@
 import { durationOf } from './occurrences';
-import { ITEMS, MEMORY_FLOWER, STREAK_ITEMS } from './items';
+import { GARDEN_MAX, ITEMS, MEMORY_FLOWER, STREAK_ITEMS } from './items';
 import type { Category, Task, Wardrobe } from './types';
 import { DEFAULT_OUTFIT, DEFAULT_HAIR } from './items';
 
@@ -91,4 +91,12 @@ export function defaultWardrobe(): Wardrobe {
 export function equip(w: Wardrobe, slot: keyof Wardrobe['equipped'], itemId?: string): Wardrobe {
   if (slot === 'outfit' && !itemId) return w;
   return { ...w, equipped: { ...w.equipped, [slot]: itemId } };
+}
+
+/** Place or remove a garden decoration. Only owned items; at most GARDEN_MAX placed (oldest drops off). */
+export function toggleGarden(w: Wardrobe, itemId: string): Wardrobe {
+  const placed = w.garden ?? [];
+  if (placed.includes(itemId)) return { ...w, garden: placed.filter((id) => id !== itemId) };
+  if (!w.owned.includes(itemId)) return w;
+  return { ...w, garden: [...placed, itemId].slice(-GARDEN_MAX) };
 }
