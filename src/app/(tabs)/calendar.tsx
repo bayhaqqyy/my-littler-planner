@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import Svg from 'react-native-svg';
 import { format } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import { addDays, conflictingIds, deadlineOccurrences, dueLabel, isValidDate, occurrencesInRange, occurrencesOn, parseDate, startOfWeek, toDateStr, urgencyOf, wallToDate } from '@/domain';
@@ -17,8 +16,9 @@ import { Button, Card, IconButton, Row, Segmented, T } from '@/components/ui/pri
 import { Icon } from '@/components/ui/Icon';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { TaskRow } from '@/components/task/TaskRow';
-import { BearArt } from '@/components/illustrations';
+
 import { DayTimeline, dayLabel, MonthGrid, WeekView } from '@/components/calendar/CalendarViews';
+import { Flower, Friend, FriendArt } from '@/components/avatar/friends';
 
 type View_ = 'month' | 'week' | 'day';
 
@@ -103,7 +103,7 @@ export default function CalendarScreen() {
           <View style={{ gap: 8 }}>{upcoming.map((v) => <TaskRow key={v.key} v={v} showDate />)}</View>
         )}
       </Card>
-      <Card title="Deadline minggu ini" right={<Svg width={40} height={36} viewBox="0 0 60 54" aria-hidden><BearArt /></Svg>}>
+      <Card title="Deadline minggu ini" right={<Friend kind="lebah" size={40} />}>
         {deadlines.length === 0 ? <T v="muted">Tidak ada deadline minggu ini 🎉</T> : (
           <View style={{ gap: 6 }}>
             {deadlines.map((v) => {

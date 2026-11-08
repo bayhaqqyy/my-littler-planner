@@ -3,9 +3,10 @@ import { Pressable, View } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { canPromptInstall, isInAppBrowser, isInstalled, isIOSDevice, isIOSSafari, onInstallChange, promptInstall } from '@/services/install';
 import { colors, radius } from '@/theme/theme';
-import { Bunny } from './illustrations';
+
 import { Button, Card, css, IconButton, Row, T } from './ui/primitives';
 import { Icon } from './ui/Icon';
+import { Flower, Friend, FriendArt } from '@/components/avatar/friends';
 
 const LS_DISMISS = 'mlp-install-dismissed';
 
@@ -102,7 +103,7 @@ export function InstallBanner() {
   return (
     <View style={[{ borderRadius: radius.card, borderWidth: 1, borderColor: '#CFE8BE', padding: 14, gap: 10 }, css({ backgroundImage: 'linear-gradient(135deg,#FFFFFF,#F2FAEB)' })]}>
       <Row gap={10}>
-        <Bunny size={44} />
+        <Friend kind="landak" size={46} />
         <View style={{ flex: 1, minWidth: 0 }}>
           <T v="cardTitle">Pasang Little Planner di HP-mu</T>
           <T v="muted">Biar bisa dibuka dari layar utama dan dapat pengingat.</T>

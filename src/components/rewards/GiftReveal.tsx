@@ -5,8 +5,9 @@ import { useStore, type OpenResult } from '@/store/store';
 import { useCharacterName, useReduceMotion } from '@/store/hooks';
 import { Button, Card, RarityPill, Row, T } from '@/components/ui/primitives';
 import { Sheet } from '@/components/ui/Overlays';
-import { GiftBoxArt, MiniAzza, Tulip } from '@/components/illustrations';
+import { GiftBoxArt, MiniAzza } from '@/components/illustrations';
 import { colors } from '@/theme/theme';
+import { Flower, Friend, FriendArt } from '@/components/avatar/friends';
 
 /** Opening animation: the box wiggles twice (900 ms), then the item pops in (600 ms). */
 export function GiftReveal({ box, onClose }: { box?: GiftBox; onClose: () => void }) {
@@ -50,7 +51,7 @@ export function GiftReveal({ box, onClose }: { box?: GiftBox; onClose: () => voi
           </Animated.View>
         ) : (
           <Animated.View style={{ alignItems: 'center', gap: 8, opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] }) }] }}>
-            {item ? <MiniAzza size={150} pose="surprised" equipped={wearing} /> : <Tulip size={120} color="#C3B0EE" />}
+            {item ? <MiniAzza size={150} pose="surprised" equipped={wearing} /> : <Flower size={110} color="#FF9EC2" />}
             <Row gap={8}>
               <T v="greeting">{item ? item.name : 'Bunga kenangan'}</T>
               {item && <RarityPill r={item.rarity} />}

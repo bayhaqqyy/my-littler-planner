@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
-import Svg from 'react-native-svg';
 import { format } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import { addDays, MOOD_LABEL, MOODS, moodsOf, parseDate, toggleMood, type DailyNote, type Mood } from '@/domain';
@@ -10,8 +9,9 @@ import { colors, fonts, INPUT_FONT_SIZE, radius } from '@/theme/theme';
 import { HeaderActions, Page } from '@/components/AppShell';
 import { Button, Card, css, Field, IconButton, Label, Row, T } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/Icon';
-import { BunnyArt, ChickArt, SheepArt } from '@/components/illustrations';
+
 import { MoodFace, MOOD_COLORS } from '@/components/notes/MoodFace';
+import { Flower, Friend, FriendArt } from '@/components/avatar/friends';
 
 const LINE = 28;
 const fmt = (d: string, p: string) => format(parseDate(d), p, { locale: localeId });
@@ -130,7 +130,7 @@ export default function NotesScreen() {
       </View>
 
       <View>
-        <Label>Daily reflection</Label>
+        <Label>Refleksi harian</Label>
         <T v="body" style={{ marginBottom: 6 }}>Apa yang sudah kamu lakukan hari ini?</T>
         <Field
           value={reflection}
@@ -149,9 +149,9 @@ export default function NotesScreen() {
   const list = (
     <Card title="Catatan sebelumnya" right={
       <Row gap={0}>
-        <Svg width={34} height={33} viewBox="0 0 60 58" aria-hidden><SheepArt /></Svg>
-        <Svg width={32} height={33} viewBox="0 0 60 62" aria-hidden><BunnyArt /></Svg>
-        <Svg width={30} height={30} viewBox="0 0 60 60" aria-hidden><ChickArt /></Svg>
+        <Friend kind="kodok" size={34} />
+        <Friend kind="landak" size={34} />
+        <Friend kind="lebah" size={32} />
       </Row>
     }>
       {previous.length === 0 ? (

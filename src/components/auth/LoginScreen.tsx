@@ -7,13 +7,14 @@ import {
   authErrorText, isSupabaseConfigured, linkError, resendVerification, sendPasswordReset, signInWithEmail, signInWithGoogle, signUpWithEmail,
 } from '@/services/supabase';
 import { colors, linear } from '@/theme/theme';
-import { BunnyArt, ChickArt, MiniAzza, TulipArt } from '@/components/illustrations';
+import { MiniAzza } from '@/components/illustrations';
 import { DecoLayer } from '@/components/deco/DecoLayer';
 import { Button, Card, css, Field, Label, Row, Segmented, T } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/Icon';
 import { InstallInstructions } from '@/components/InstallCard';
 import { isInstalled } from '@/services/install';
 import { unlockAudio } from '@/services/audio';
+import { Flower, Friend, FriendArt } from '@/components/avatar/friends';
 
 export const MIN_PASSWORD = 8;
 const emailSchema = z.string().trim().email('Format email tidak valid');
@@ -65,11 +66,11 @@ function Header({ sub }: { sub: string }) {
   return (
     <View style={{ alignItems: 'center', gap: 4 }}>
       <Row gap={0} style={{ alignItems: 'flex-end' }}>
-        <Svg width={28} height={42} viewBox="0 0 40 60" aria-hidden><TulipArt color="#FF9EC2" /></Svg>
-        <Svg width={44} height={46} viewBox="0 0 60 62" aria-hidden><BunnyArt /></Svg>
+        <Flower size={26} color="#FF9EC2" />
+        <Friend kind="landak" size={46} />
         <MiniAzza size={90} pose="happy" showPet={false} />
-        <Svg width={36} height={36} viewBox="0 0 60 60" aria-hidden><ChickArt /></Svg>
-        <Svg width={24} height={36} viewBox="0 0 40 60" aria-hidden><TulipArt color="#C3B0EE" /></Svg>
+        <Friend kind="kodok" size={40} />
+        <Flower size={22} color="#FFCE3A" />
       </Row>
       <T v="title" accessibilityRole="header" style={{ color: colors.accent, marginTop: 6 }}>My Little Planner</T>
       <T v="muted" style={{ textAlign: 'center' }}>{sub}</T>

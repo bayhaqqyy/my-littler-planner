@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
-import Svg from 'react-native-svg';
 import { format, formatDistanceToNow } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import {
@@ -13,12 +12,12 @@ import { categoryColors, colors, data, fonts, linear } from '@/theme/theme';
 import { HeaderActions, Page } from '@/components/AppShell';
 import { Card, css, Row, Segmented, T } from '@/components/ui/primitives';
 import { BarChart, Donut, ProgressBar } from '@/components/ui/Charts';
-import { BearArt, Flame, SheepArt } from '@/components/illustrations';
+import { Flame } from '@/components/illustrations';
 import { Icon } from '@/components/ui/Icon';
 import { fmtMin, StatDetailSheet, type StatKind } from '@/components/progress/StatDetails';
+import { Flower, Friend, FriendArt } from '@/components/avatar/friends';
 
 const WEEKDAY_NAMES = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-
 
 function Stat({ label, value, sub, grad, valueColor, onPress }: { label: string; value: string; sub?: string; grad: string[]; valueColor?: string; onPress: () => void }) {
   return (
@@ -151,7 +150,7 @@ export default function ProgressScreen() {
   const levelCard = (
     <Card>
       <Row gap={12}>
-        <Svg width={58} height={52} viewBox="0 0 60 54" aria-hidden><BearArt /></Svg>
+        <Friend kind="tupai" size={56} />
         <View style={{ flex: 1, gap: 2 }}>
           <T v="muted">Level {level.level}</T>
           <T v="cardTitle" style={{ fontSize: 18, color: colors.accent }}>{level.title}</T>
@@ -165,7 +164,7 @@ export default function ProgressScreen() {
   );
 
   const history = (
-    <Card title="Riwayat terbaru" right={<Svg width={36} height={35} viewBox="0 0 60 58" aria-hidden><SheepArt /></Svg>}>
+    <Card title="Riwayat terbaru" right={<Friend kind="kodok" size={36} />}>
       {recent.length === 0 ? <T v="muted">Belum ada tugas selesai. Centang tugas pertamamu! 🌷</T> : (
         <View>
           {recent.map((l) => (

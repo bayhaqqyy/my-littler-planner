@@ -5,10 +5,11 @@ import { colors, radius, shadow } from '@/theme/theme';
 import { useUi } from '@/store/ui';
 import { useStore } from '@/store/store';
 import { useLayout, useReduceMotion, useCharacterName } from '@/store/hooks';
-import { MiniAzza, Flame, HeartShape, StarShape, DaisyArt } from '@/components/illustrations';
+import { MiniAzza, Flame, HeartShape, StarShape } from '@/components/illustrations';
 import Svg from 'react-native-svg';
 import { css, IconButton, T, Button, Row } from './primitives';
 import { Icon } from './Icon';
+import { Bloom } from '@/components/avatar/shapes';
 
 /** Bottom sheet on mobile, centered dialog on larger screens. */
 export function Sheet({ visible, onClose, title, children, footer, wide }: {
@@ -116,7 +117,7 @@ function Burst({ x, y }: { x: number; y: number }) {
           ],
         }}>
           <Svg width={16} height={16} viewBox="0 0 20 20">
-            {p.kind === 0 ? <HeartShape color={p.color} /> : p.kind === 1 ? <StarShape color={p.color} /> : <DaisyArt s={0.5} center={p.color} />}
+            {p.kind === 0 ? <HeartShape color={p.color} /> : p.kind === 1 ? <StarShape color={p.color} /> : <Bloom cx={10} cy={10} r={9} color={p.color} outline={false} />}
           </Svg>
         </Animated.View>
       ))}

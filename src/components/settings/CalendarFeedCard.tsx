@@ -9,7 +9,6 @@ import { Button, Card, T } from '@/components/ui/primitives';
 import { ConfirmDialog } from '@/components/ui/Overlays';
 import { Icon } from '@/components/ui/Icon';
 
-
 async function copy(text: string) {
   try { await navigator.clipboard.writeText(text); useUi.getState().pushToast('info', 'Link iCal disalin 📋'); }
   catch { window.prompt('Salin link ini:', text); }

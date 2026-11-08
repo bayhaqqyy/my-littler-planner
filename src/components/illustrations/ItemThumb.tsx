@@ -1,7 +1,7 @@
 import Svg from 'react-native-svg';
 import { ITEM_BY_ID } from '@/domain';
 import { MiniAzza } from './MiniAzza';
-import { TulipArt } from './Critters';
+
 import { PetArt } from '../avatar/pets';
 import { GardenArt } from '../avatar/garden';
 
@@ -9,7 +9,7 @@ import { GardenArt } from '../avatar/garden';
 export function ItemThumb({ itemId, size = 64 }: { itemId: string; size?: number }) {
   const item = ITEM_BY_ID[itemId];
   if (!item) {
-    return <Svg width={size} height={size} viewBox="0 0 40 60"><TulipArt color="#C3B0EE" /></Svg>;
+    return <Svg width={size} height={size} viewBox="0 0 60 60"><GardenArt look={{ k: 'tulip', a: '#B79CFF' }} /></Svg>;
   }
   if (item.slot === 'pet') return <Svg width={size} height={size} viewBox="0 0 60 60"><PetArt look={item.look} /></Svg>;
   if (item.slot === 'garden') return <Svg width={size} height={size} viewBox="0 0 60 60"><GardenArt look={item.look} /></Svg>;

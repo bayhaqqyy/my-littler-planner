@@ -10,7 +10,7 @@ import { Page } from '@/components/AppShell';
 import { Button, Card, Chip, css, Field, IconButton, Label, Row, Segmented, Switch, T } from '@/components/ui/primitives';
 import { ConfirmDialog } from '@/components/ui/Overlays';
 import { Icon } from '@/components/ui/Icon';
-import { MiniAzza, Bunny } from '@/components/illustrations';
+import { MiniAzza } from '@/components/illustrations';
 import { TonePicker } from '@/components/settings/TonePicker';
 import { PomodoroPicker } from '@/components/timer/PomodoroPicker';
 import { logOut, signOutEverywhere } from '@/components/auth/AuthGate';
@@ -24,6 +24,7 @@ import { deleteRemoteData, syncNow, useSyncStatus } from '@/services/sync';
 import { clearLocal } from '@/services/storage';
 import { playTone } from '@/services/audio';
 import { colors, radius } from '@/theme/theme';
+import { Flower, Friend, FriendArt } from '@/components/avatar/friends';
 
 export default function SettingsScreen() {
   const { isDesktop } = useLayout();
@@ -194,7 +195,7 @@ function NotificationCard() {
         {guide && (
           <View style={{ backgroundColor: '#FFF3F7', borderRadius: radius.card, padding: 14, gap: 8, borderWidth: 1, borderColor: '#FFC1D6' }}>
             <Row gap={10}>
-              <Bunny size={48} />
+              <Friend kind="landak" size={48} />
               <View style={{ flex: 1, minWidth: 0 }}>
                 <T v="cardTitle">Pasang ke Home Screen dulu ya</T>
                 <T v="muted">Di iPhone, Safari maupun Chrome tidak bisa mengizinkan notifikasi untuk situs web biasa. Ini aturan Apple: notifikasi hanya untuk aplikasi web yang dibuka dari ikon Home Screen.</T>

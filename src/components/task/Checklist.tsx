@@ -4,7 +4,8 @@ import { presetConfig, type PomodoroPreset } from '@/domain';
 import { useStore } from '@/store/store';
 import { checklist, linear, fonts } from '@/theme/theme';
 import { css, Field, Row, T } from '@/components/ui/primitives';
-import { Sheep, Tulip } from '@/components/illustrations';
+
+import { Flower, Friend, FriendArt } from '@/components/avatar/friends';
 
 const QUICK_PRESETS: { key: Exclude<PomodoroPreset, 'custom'>; label: string; long: string }[] = [
   { key: 'klasik', label: '25/5', long: 'Klasik 25 menit fokus, 5 menit istirahat' },
@@ -91,8 +92,8 @@ export function ChecklistNote({ date }: { date: string }) {
           style={{ borderWidth: 0, borderRadius: 12, backgroundColor: checklist.paper, minHeight: NOTE_MIN_HEIGHT, overflow: 'hidden' }} />
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'flex-end' }} aria-hidden>
-        <Tulip size={44} color="#F6A58F" />
-        <Sheep size={84} />
+        <Flower size={30} color="#F6A58F" />
+        <Friend kind="hamster" size={76} />
       </View>
     </Row>
   );

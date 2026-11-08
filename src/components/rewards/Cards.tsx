@@ -10,11 +10,12 @@ import { useReduceMotion, useToday } from '@/store/hooks';
 import { Button, Card, css, Row, Segmented, T } from '@/components/ui/primitives';
 import { ProgressBar } from '@/components/ui/Charts';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { Bear, Flame } from '@/components/illustrations';
+import { Flame } from '@/components/illustrations';
 import { colors, data, radius } from '@/theme/theme';
 import { router } from 'expo-router';
 import { format } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
+import { Flower, Friend, FriendArt } from '@/components/avatar/friends';
 
 function useLogs() {
   const c = useStore((s) => s.completionLogs);
@@ -28,7 +29,7 @@ export function LevelCard() {
   return (
     <Card title="Level" right={<T v="muted">maks. Lv. {MAX_LEVEL}</T>}>
       <Row gap={14}>
-        <Bear size={72} />
+        <Friend kind="lebah" size={72} />
         <View style={{ flex: 1, gap: 6, minWidth: 0 }}>
           <T v="greeting" style={{ color: colors.accent }}>Lv. {lvl.level} · {levelEmoji(lvl.level)} {lvl.title}</T>
           <T v="muted">{lvl.points} poin{lvl.next ? ` · ${lvl.next.min - lvl.points} poin lagi ke Lv. ${lvl.next.level}` : ' · level tertinggi! 👑'}</T>

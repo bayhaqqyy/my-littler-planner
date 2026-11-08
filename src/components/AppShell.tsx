@@ -9,9 +9,10 @@ import { useCharacterName, useLayout, useNow, useReduceMotion } from '@/store/ho
 import { colors, fonts, linear, radius, shadow } from '@/theme/theme';
 import { css, IconButton, Row, T } from './ui/primitives';
 import { Icon, type IconName } from './ui/Icon';
-import { BunnyArt, MiniAzza } from './illustrations';
+import { MiniAzza } from './illustrations';
 import { StemFlower } from './deco/Garden';
 import { DecoLayer } from './deco/DecoLayer';
+import { Flower, Friend, FriendArt } from '@/components/avatar/friends';
 
 export const NAV: { href: string; label: string; short: string; icon: IconName }[] = [
   { href: '/', label: 'Kebun', short: 'Kebun', icon: 'garden' },
@@ -97,7 +98,7 @@ function Sidebar() {
           <Svg width={150} height={54} viewBox="0 0 150 54">
             <G transform="translate(4 -4)"><StemFlower color="#FF9EC2" height={34} /></G>
             <G transform="translate(30 0)"><StemFlower color="#FFCE3A" height={42} /></G>
-            <G transform="translate(52 6) scale(0.8)"><BunnyArt /></G>
+            <FriendArt kind="landak" x={50} y={6} s={0.8} />
             <G transform="translate(98 -2)"><StemFlower color="#B79CFF" height={36} /></G>
             <G transform="translate(122 2)"><StemFlower color="#8EC9FF" height={30} /></G>
           </Svg>

@@ -15,10 +15,11 @@ import { categoryColors, colors, data, fonts, linear, radius, shadow, urgencyCol
 import { Button, Card, css, Row, T } from '@/components/ui/primitives';
 import { ProgressBar } from '@/components/ui/Charts';
 import { Icon } from '@/components/ui/Icon';
-import { BearArt, BunnyArt, ChickArt, Flame, GiftBoxArt, KittyArt, MiniAzza, TulipArt, DaisyArt } from '@/components/illustrations';
+import { Flame, GiftBoxArt, MiniAzza } from '@/components/illustrations';
 import { GardenCloud, Hill, Sprout, StemFlower, Sunflower } from '@/components/deco/Garden';
 import { GardenArt } from '@/components/avatar/garden';
 import { timeLabel } from '@/components/task/TaskRow';
+import { Flower, Friend, FriendArt } from '@/components/avatar/friends';
 
 const NO_GARDEN: string[] = [];
 
@@ -145,7 +146,7 @@ export function TimerPanel() {
     return (
       <Card title="Timer saat ini">
         <Row gap={12}>
-          <Svg width={52} height={48} viewBox="0 0 60 56" aria-hidden><KittyArt /></Svg>
+          <Friend kind="landak" size={52} />
           <View style={{ flex: 1, gap: 2 }}>
             <T v="body">Belum ada timer berjalan</T>
             <T v="muted">Pilih tugas lalu tekan Mulai timer, atau langsung pakai Pomodoro.</T>
@@ -187,7 +188,7 @@ export function UpcomingPanel({ tasks, occs, today }: { tasks: Task[]; occs: Rec
     <Card title="Jadwal terdekat">
       {items.length === 0 ? (
         <Row gap={10}>
-          <Svg width={40} height={40} viewBox="0 0 60 60" aria-hidden><ChickArt /></Svg>
+          <Friend kind="lebah" size={40} />
           <T v="muted" style={{ flex: 1 }}>Tidak ada jadwal ber-jam dalam 7 hari ke depan.</T>
         </Row>
       ) : (
@@ -319,7 +320,7 @@ export function GiftCard({ streak }: { streak: number }) {
       {!FEATURES.gifts && <GiftsDisabledNote />}
       <Row gap={14} style={FEATURES.gifts ? undefined : disabledLook}>
         <View style={{ width: 76, height: 76, borderRadius: 24, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
-          {top ? <GiftBoxArt size={60} rarity={top.rarity} /> : <Svg width={48} height={48} viewBox="0 0 40 40" aria-hidden><DaisyArt /></Svg>}
+          {top ? <GiftBoxArt size={60} rarity={top.rarity} /> : <Friend kind="kodok" size={52} />}
         </View>
         <View style={{ flex: 1, gap: 3 }}>
           <T style={{ fontFamily: fonts.display, fontSize: 22, lineHeight: 28, color: colors.accent }}>{gifts.length ? `${gifts.length} kado` : 'Belum ada'}</T>
